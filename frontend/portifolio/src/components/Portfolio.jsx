@@ -1,16 +1,16 @@
 import React, { useState } from 'react';
 import { FaGithub, FaExternalLinkAlt, FaFolder } from 'react-icons/fa';
+import { Link } from 'react-router-dom';
 
 const Portfolio = () => {
     const [filter, setFilter] = useState('todos');
 
-    // Seus Projetos Reais (Dados Mockados para o Frontend)
     const projects = [
         {
             id: 1,
             title: "WikiFans",
             category: "fullstack",
-            image: "https://placehold.co/600x400/111/emerald?text=WikiFans", // Placeholder por enquanto
+            image: "https://placehold.co/600x400/111/emerald?text=WikiFans",
             tech: ["React", "FastAPI", "PostgreSQL", "Render"],
             description: "Wiki completa com autenticação e gestão de conteúdo. Frontend na Vercel e Backend no Render.",
             githubLink: "#",
@@ -34,7 +34,7 @@ const Portfolio = () => {
             tech: ["FastAPI", "JWT Auth", "Alembic", "Docker"],
             description: "Backend robusto com autenticação JWT segura, migrações de banco e rotas documentadas (Swagger).",
             githubLink: "#",
-            deployLink: null // Backend puro as vezes não tem frontend visual
+            deployLink: null
         },
         {
             id: 4,
@@ -58,7 +58,6 @@ const Portfolio = () => {
         }
     ];
 
-    // Lógica de Filtragem
     const filteredProjects = filter === 'todos'
         ? projects
         : projects.filter(project => project.category === filter);
@@ -110,23 +109,27 @@ const FilterBtn = ({ label, value, current, setFilter }) => (
 const ProjectCard = ({ project }) => (
     <div className="group relative bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden hover:border-emerald-500/50 transition-all duration-500 hover:-translate-y-2 hover:shadow-xl hover:shadow-emerald-900/10">
 
-        <div className="relative h-48 overflow-hidden">
-            <img
-                src={project.image}
-                alt={project.title}
-                className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-zinc-900 via-zinc-900/40 to-transparent opacity-90"></div>
+        <Link to={`/projeto/${project.id}`} className="block">
+            <div className="relative h-48 overflow-hidden cursor-pointer">
+                <img
+                    src={project.image}
+                    alt={project.title}
+                    className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-zinc-900 via-zinc-900/40 to-transparent opacity-90"></div>
 
-            <div className="absolute top-4 left-4 px-3 py-1 bg-black/50 backdrop-blur-md border border-white/10 rounded-lg text-xs font-mono text-emerald-400 uppercase tracking-wider">
-                {project.category}
+                <div className="absolute top-4 left-4 px-3 py-1 bg-black/50 backdrop-blur-md border border-white/10 rounded-lg text-xs font-mono text-emerald-400 uppercase tracking-wider">
+                    {project.category}
+                </div>
             </div>
-        </div>
+        </Link>
 
         <div className="p-6">
-            <h3 className="text-xl font-bold text-white mb-2 group-hover:text-emerald-400 transition-colors">
-                {project.title}
-            </h3>
+            <Link to={`/projeto/${project.id}`} className="block w-fit">
+                <h3 className="text-xl font-bold text-white mb-2 group-hover:text-emerald-400 transition-colors">
+                    {project.title}
+                </h3>
+            </Link>
 
             <p className="text-zinc-400 text-sm mb-4 line-clamp-3 min-h-[60px]">
                 {project.description}
@@ -141,11 +144,11 @@ const ProjectCard = ({ project }) => (
             </div>
 
             <div className="flex items-center gap-4 pt-4 border-t border-zinc-800/50">
-                <a href={project.githubLink} className="flex items-center gap-2 text-zinc-400 hover:text-white text-sm font-medium transition-colors">
+                <a href={project.githubLink} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-zinc-400 hover:text-white text-sm font-medium transition-colors">
                     <FaGithub /> Code
                 </a>
                 {project.deployLink && (
-                    <a href={project.deployLink} className="flex items-center gap-2 text-zinc-400 hover:text-emerald-400 text-sm font-medium transition-colors ml-auto">
+                    <a href={project.deployLink} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-zinc-400 hover:text-emerald-400 text-sm font-medium transition-colors ml-auto">
                         Live Demo <FaExternalLinkAlt className="text-xs" />
                     </a>
                 )}

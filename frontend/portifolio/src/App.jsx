@@ -1,9 +1,22 @@
 import React from 'react'
+import { Routes, Route } from 'react-router-dom' // Importe o Routes
 import Sidebar from './layout/Sidebar'
 import Hero from './components/Hero'
 import About from './components/About'
 import Skills from './components/Skills'
 import Portfolio from './components/Portfolio'
+import ProjectDetails from './pages/ProjectDetails'
+
+
+const Home = () => (
+  <>
+    <Hero />
+    <About />
+    <Skills />
+    <Portfolio />
+  </>
+);
+
 function App() {
   return (
     <div className="flex min-h-screen bg-black text-white font-sans selection:bg-emerald-500 selection:text-white">
@@ -11,18 +24,12 @@ function App() {
 
       <main className="flex-1 ml-72 p-8 md:p-12 lg:p-20 bg-zinc-950 min-h-screen">
         <div className="max-w-5xl mx-auto">
+          
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/projeto/:id" element={<ProjectDetails />} />
+          </Routes>
 
-          <Hero />
-
-          <About />
-
-          <Skills />
-
-          <Portfolio />
-
-
-
-          <div className="h-screen"></div>
         </div>
       </main>
     </div>
