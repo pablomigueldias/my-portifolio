@@ -3,6 +3,7 @@ import Sidebar from './layout/Sidebar'
 import Hero from './components/Hero'
 import About from './components/About'
 import Skills from './components/Skills'
+import Portfolio from './components/Portfolio'
 function App() {
   return (
     <div className="flex min-h-screen bg-black text-white font-sans selection:bg-emerald-500 selection:text-white">
@@ -16,6 +17,8 @@ function App() {
           <About />
 
           <Skills />
+
+          <Portfolio />
 
 
 
