@@ -1,6 +1,7 @@
 import React from 'react'
 import Sidebar from './layout/Sidebar'
 import Hero from './components/Hero'
+import About from './components/About'
 function App() {
   return (
     <div className="flex min-h-screen bg-black text-white font-sans selection:bg-emerald-500 selection:text-white">
@@ -10,6 +11,8 @@ function App() {
         <div className="max-w-5xl mx-auto">
 
           <Hero />
+
+          <About />
 
 
 
