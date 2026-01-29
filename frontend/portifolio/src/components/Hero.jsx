@@ -1,6 +1,7 @@
 import React from 'react'
 import { Typewriter } from 'react-simple-typewriter'
 import { FaDownload, FaArrowRight } from 'react-icons/fa'
+import { Link } from 'react-router-dom'
 
 
 const Hero = () => {
@@ -19,7 +20,7 @@ const Hero = () => {
                     Disponível para projetos
                 </span>
             </div>
-            
+
             <h1 className="text-6xl md:text-7xl font-bold text-white mb-6 tracking-tight">
                 Olá, eu sou <span className="text-zinc-500">Pablo</span>
             </h1>
@@ -53,10 +54,13 @@ const Hero = () => {
                     Download CV
                 </button>
 
-                <button className="flex items-center gap-3 px-8 py-4 bg-transparent border border-zinc-700 text-white hover:bg-zinc-800 rounded-xl font-bold transition-all duration-300">
+                <Link
+                    to="/projects"
+                    className="flex items-center gap-3 px-8 py-4 bg-transparent border border-zinc-700 text-white hover:bg-zinc-800 rounded-xl font-bold transition-all duration-300"
+                >
                     Meus Projetos
                     <FaArrowRight className="text-xs" />
-                </button>
+                </Link>
             </div>
 
             <div className="mt-16 pt-8 border-t border-zinc-900 w-full">

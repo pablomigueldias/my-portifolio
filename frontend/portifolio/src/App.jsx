@@ -7,6 +7,8 @@ import Skills from './components/Skills'
 import Portfolio from './components/Portfolio'
 import ProjectDetails from './pages/ProjectDetails'
 import TemplatesGallery from './pages/TemplatesGallery'
+import AllProjects from './pages/AllProjects'
+
 
 
 const Home = () => (
@@ -28,6 +30,7 @@ function App() {
 
           <Routes>
             <Route path="/" element={<Home />} />
+            <Route path="/projects" element={<AllProjects />} />
             <Route path="/projeto/:id" element={<ProjectDetails />} />
             <Route path="/templates" element={<TemplatesGallery />} />
           </Routes>

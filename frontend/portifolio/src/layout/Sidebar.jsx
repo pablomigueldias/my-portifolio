@@ -1,9 +1,7 @@
 import React from 'react';
-// 1. Adicionei o FaLayerGroup que estava faltando nos imports
 import { FaHome, FaUser, FaCode, FaBlog, FaEnvelope, FaGithub, FaLinkedin, FaLayerGroup } from 'react-icons/fa';
 import { Link, useLocation } from 'react-router-dom';
 
-// 2. NavItem atualizado: Usa 'Link' e recebe a prop 'to'
 const NavItem = ({ icon, label, to, active = false }) => (
     <Link
         to={to}
@@ -28,33 +26,31 @@ const Sidebar = () => {
     const location = useLocation();
 
     return (
-        // 3. Corrigi 'boder-r' para 'border-r' e 'border-zinx' para 'border-zinc'
         <aside className='fixed left-0 top-0 h-screen w-72 bg-zinc-900 border-r border-zinc-800 flex flex-col justify-between p-8 z-50'>
-            
+
             <div className="text-center">
                 <div className="relative inline-block mb-6">
-                    <img 
-                        src="https://github.com/github.png" 
-                        alt="Profile" 
-                        className='w-32 h-32 rounded-full border-4 border-zinc-800 mx-auto hover:grayscale-0 transition-all duration-500' 
+                    <img
+                        src="https://github.com/github.png"
+                        alt="Profile"
+                        className='w-32 h-32 rounded-full border-4 border-zinc-800 mx-auto hover:grayscale-0 transition-all duration-500'
                     />
-                    {/* Movi a bolinha verde para dentro do relative para ela ficar posicionada corretamente na foto */}
                     <div className="absolute bottom-2 right-2 w-4 h-4 bg-emerald-500 rounded-full border-2 border-zinc-900"></div>
                 </div>
-                
+
                 <h2 className='text-2xl font-bold text-white mb-2 tracking-tight'>Pablo Ortiz</h2>
                 <span className='px-3 py-1 bg-zinc-800 text-zinc-300 text-xs rounded-full uppercase tracking-wider font-semibold'>Full Stack Developer</span>
             </div>
 
             <nav className='flex-1 flex flex-col justify-center space-y-2'>
-                
+
                 <NavItem to="/" icon={<FaHome />} label="Home" active={location.pathname === '/'} />
-                
+
                 <NavItem to="/templates" icon={<FaLayerGroup />} label="Templates" active={location.pathname === '/templates'} />
-                
+
                 <NavItem to="/#about" icon={<FaUser />} label='Sobre Mim' />
-                <NavItem to="/#portfolio" icon={<FaCode />} label='Portfólio' />
-                
+                <NavItem to="/projects" icon={<FaCode />} label='Portfólio' active={location.pathname === '/projects'} />
+
                 <NavItem to="/#blog" icon={<FaBlog />} label='Blog' />
                 <NavItem to="/#contact" icon={<FaEnvelope />} label='Contato' />
             </nav>
