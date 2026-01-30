@@ -1,8 +1,7 @@
-import React from 'react';
+import React, { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { FaCalendar, FaUser, FaArrowRight, FaTag, FaClock } from 'react-icons/fa';
-
+import { motion, AnimatePresence } from 'framer-motion';
+import { FaCalendar, FaUser, FaArrowRight, FaTag, FaClock, FaSearch, FaFire, FaTimes } from 'react-icons/fa';
 
 const BLOG_POSTS = [
     {
@@ -65,11 +64,26 @@ const cardVariants = {
 };
 
 const Blog = () => {
+    const [searchQuery, setSearchQuery] = useState("");
+    const [selectedCategory, setSelectedCategory] = useState("Todas");
+
+    const categories = useMemo(() => {
+        return ["Todas", ...new Set(BLOG_POSTS.map(post => post.category))];
+    }, []);
+
+    const filteredPosts = BLOG_POSTS.filter(post => {
+        const matchesSearch = post.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                              post.excerpt.toLowerCase().includes(searchQuery.toLowerCase());
+        const matchesCategory = selectedCategory === "Todas" || post.category === selectedCategory;
+        return matchesSearch && matchesCategory;
+    });
+
+    const recentPosts = BLOG_POSTS.slice(0, 3);
+
     return (
-        <section className="min-h-screen pb-20 pt-8 transition-colors duration-300">
-
+        <section className="min-h-screen pb-20 pt-8 transition-colors duration-300 bg-background">
             <div className="max-w-6xl mx-auto px-4">
-
+                
                 <motion.div
                     initial={{ opacity: 0, y: -20 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -83,22 +97,118 @@ const Blog = () => {
                         Blog Técnico
                     </h1>
                     <p className="text-muted-foreground text-base md:text-lg max-w-2xl leading-relaxed">
-                        Artigos, tutoriais e notas de estudo sobre desenvolvimento de software,
-                        focados em problemas reais e soluções escaláveis.
+                        Artigos, tutoriais e notas de estudo sobre desenvolvimento de software.
                     </p>
                 </motion.div>
 
-                <motion.div
-                    variants={containerVariants}
-                    initial="hidden"
-                    animate="visible"
-                    className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8"
-                >
-                    {BLOG_POSTS.map((post) => (
-                        <BlogCard key={post.id} post={post} />
-                    ))}
-                </motion.div>
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
+                    
+                    <div className="lg:col-span-8">
+                        {filteredPosts.length > 0 ? (
+                            <motion.div
+                                variants={containerVariants}
+                                initial="hidden"
+                                animate="visible"
+                                className="grid grid-cols-1 md:grid-cols-2 gap-8"
+                                key={selectedCategory + searchQuery}
+                            >
+                                <AnimatePresence mode='popLayout'>
+                                    {filteredPosts.map((post) => (
+                                        <BlogCard key={post.id} post={post} />
+                                    ))}
+                                </AnimatePresence>
+                            </motion.div>
+                        ) : (
+                            <div className="text-center py-20 border border-dashed border-border rounded-2xl">
+                                <p className="text-muted-foreground">Nenhum artigo encontrado para sua busca.</p>
+                                <button 
+                                    onClick={() => {setSearchQuery(""); setSelectedCategory("Todas")}}
+                                    className="mt-4 text-primary font-bold hover:underline"
+                                >
+                                    Limpar filtros
+                                </button>
+                            </div>
+                        )}
+                    </div>
 
+                    <aside className="lg:col-span-4 space-y-8">
+                        <div className="sticky top-24 space-y-8">
+                            
+                            <div className="bg-card border border-border p-6 rounded-2xl shadow-sm">
+                                <h3 className="text-foreground font-bold mb-4 flex items-center gap-2 text-sm uppercase tracking-wider">
+                                    <FaSearch className="text-primary" size={14} /> Buscar Artigo
+                                </h3>
+                                <div className="relative">
+                                    <input 
+                                        type="text"
+                                        value={searchQuery}
+                                        onChange={(e) => setSearchQuery(e.target.value)}
+                                        placeholder="Ex: Docker, Python..."
+                                        className="w-full bg-background border border-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-1 focus:ring-primary/50 transition-all"
+                                    />
+                                    {searchQuery && (
+                                        <button 
+                                            onClick={() => setSearchQuery("")}
+                                            className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                                        >
+                                            <FaTimes size={12} />
+                                        </button>
+                                    )}
+                                </div>
+                            </div>
+
+                            <div className="bg-card border border-border p-6 rounded-2xl shadow-sm">
+                                <h3 className="text-foreground font-bold mb-4 flex items-center gap-2 text-sm uppercase tracking-wider">
+                                    <FaTag className="text-primary" size={14} /> Categorias
+                                </h3>
+                                <div className="flex flex-wrap gap-2">
+                                    {categories.map(cat => (
+                                        <button 
+                                            key={cat}
+                                            onClick={() => setSelectedCategory(cat)}
+                                            className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all border ${
+                                                selectedCategory === cat 
+                                                ? "bg-primary text-primary-foreground border-primary" 
+                                                : "bg-secondary/30 text-muted-foreground border-border hover:border-primary/50 hover:text-primary"
+                                            }`}
+                                        >
+                                            {cat}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* Posts Recentes */}
+                            <div className="bg-card border border-border p-6 rounded-2xl shadow-sm">
+                                <h3 className="text-foreground font-bold mb-6 flex items-center gap-2 text-sm uppercase tracking-wider">
+                                    <FaFire className="text-primary" size={14} /> Em Destaque
+                                </h3>
+                                <div className="space-y-6">
+                                    {recentPosts.map(post => (
+                                        <Link key={post.id} to={`/blog/${post.id}`} className="flex gap-4 group items-start">
+                                            <div className="w-16 h-16 shrink-0 rounded-lg overflow-hidden border border-border bg-muted">
+                                                <img 
+                                                    src={post.image} 
+                                                    alt="" 
+                                                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" 
+                                                />
+                                            </div>
+                                            <div className="flex flex-col">
+                                                <h4 className="text-[13px] font-bold text-foreground group-hover:text-primary transition-colors line-clamp-2 leading-tight">
+                                                    {post.title}
+                                                </h4>
+                                                <div className="flex items-center gap-2 mt-2 text-[10px] text-muted-foreground font-mono">
+                                                    <FaCalendar size={8} /> {post.date}
+                                                </div>
+                                            </div>
+                                        </Link>
+                                    ))}
+                                </div>
+                            </div>
+
+                        </div>
+                    </aside>
+                </div>
             </div>
         </section>
     );
@@ -106,6 +216,7 @@ const Blog = () => {
 
 const BlogCard = ({ post }) => (
     <motion.article
+        layout
         variants={cardVariants}
         whileHover={{ y: -5 }}
         className="group flex flex-col bg-card border border-border rounded-2xl overflow-hidden hover:border-primary/50 transition-all duration-300 shadow-sm hover:shadow-xl hover:shadow-primary/5"
@@ -117,9 +228,7 @@ const BlogCard = ({ post }) => (
                 loading="lazy"
                 className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700"
             />
-
             <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-60"></div>
-
             <div className="absolute top-4 left-4 px-3 py-1 bg-background/90 backdrop-blur-md rounded-lg text-xs font-bold text-primary border border-border flex items-center gap-2 shadow-lg">
                 <FaTag className="text-[10px]" />
                 {post.category}
