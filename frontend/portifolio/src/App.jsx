@@ -11,28 +11,33 @@ import AllProjects from './pages/AllProjects'
 import Blog from './pages/Blog'
 import BlogPost from './pages/BlogPost'
 import Contact from './pages/Contact'
-import Footer from './pages/Footer.jsx'
-import ScrollToTop from './components/ScrollToTop.jsx'
+import Footer from './pages/Footer'
+import ScrollToTop from './components/ScrollToTop'
 
-
+// Página Home (Agrupa as seções da Landing Page)
 const Home = () => (
-  <>
+  // Adicionei w-full e overflow-hidden aqui também por segurança
+  <div className="w-full overflow-x-hidden">
     <Hero />
     <About />
     <Skills />
     <Portfolio />
-  </>
+  </div>
 );
 
 function App() {
   return (
-    <div className="flex min-h-screen bg-background text-foreground font-sans selection:bg-primary selection:text-white transition-colors duration-300">
+    // overflow-x-hidden no container raiz
+    <div className="flex min-h-screen bg-background text-foreground font-sans selection:bg-primary selection:text-white transition-colors duration-300 overflow-x-hidden">
 
       <ScrollToTop />
 
       <Sidebar />
-      <main className="flex-1 ml-0 lg:ml-72 p-6 md:p-12 lg:p-20 min-h-screen flex flex-col transition-all duration-300">
-        <div className="max-w-5xl mx-auto w-full flex-1">
+
+      {/* AQUI ESTA A CORREÇÃO PRINCIPAL: */}
+      {/* Adicionei 'overflow-x-hidden', 'w-full' e 'relative' */}
+      <main className="flex-1 ml-0 lg:ml-72 p-6 md:p-12 lg:p-20 min-h-screen flex flex-col transition-all duration-300 overflow-x-hidden w-full relative">
+        <div className="max-w-6xl mx-auto w-full flex-1">
 
           <Routes>
             <Route path="/" element={<Home />} />
