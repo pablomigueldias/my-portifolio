@@ -4,9 +4,9 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { FaArrowRight, FaLayerGroup, FaSpinner } from 'react-icons/fa';
 import axios from 'axios';
 
-import ProjectCard from '../ui/ProjectCard';
-import FilterButton from '../ui/FilterButton';
-import { FILTERS } from '../../data/projectsData';
+import ProjectCard from '../ui/ProjectCard.jsx';
+import FilterButton from '../ui/FilterButton.jsx';
+import { FILTERS } from '../../data/projectsData.js';
 
 const Portfolio = () => {
     // 1. Estados Dinâmicos
