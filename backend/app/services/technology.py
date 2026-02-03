@@ -19,7 +19,6 @@ class TechnologyService:
         if not db_tech:
             return None
 
-        # Extrai apenas os campos que foram enviados no JSON (exclude_unset=True)
         update_data = tech_in.model_dump(exclude_unset=True)
 
         for field, value in update_data.items():
