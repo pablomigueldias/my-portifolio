@@ -6,15 +6,16 @@ import { FaGithub, FaExternalLinkAlt, FaArrowRight } from 'react-icons/fa';
 const CompactProjectCard = ({ project }) => {
     if (!project) return null;
 
+    // Destructuring adaptado para o padrão do Banco de Dados (Snake Case)
     const {
         id,
         title = "Projeto Sem Título",
         category = "Geral",
-        image = "https://placehold.co/600x400?text=No+Image",
-        description = "",
-        tech = [],
-        githubLink = "#",
-        deployLink
+        image_url = "https://placehold.co/600x400?text=No+Image",
+        short_description = "",
+        technologies = [], // Agora é um Array de Objetos [{name: "React", ...}]
+        github_link = "#",
+        deploy_link
     } = project;
 
     return (
@@ -28,7 +29,7 @@ const CompactProjectCard = ({ project }) => {
         >
             <Link to={`/projeto/${id}`} className="h-40 overflow-hidden relative cursor-pointer block">
                 <img
-                    src={image}
+                    src={image_url}
                     alt={title}
                     loading="lazy"
                     className="w-full h-full object-cover opacity-90 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500"
@@ -46,26 +47,27 @@ const CompactProjectCard = ({ project }) => {
                     </h3>
                 </Link>
                 <p className="text-muted-foreground text-xs mb-4 line-clamp-2 leading-relaxed">
-                    {description}
+                    {short_description}
                 </p>
 
                 <div className="mt-auto">
 
+                    {/* Renderização das Tecnologias (Acessando t.name) */}
                     <div className="flex flex-wrap gap-2 mb-4">
-                        {tech.slice(0, 3).map((t, i) => (
+                        {technologies.slice(0, 3).map((tech, i) => (
                             <span key={i} className="text-[10px] px-2 py-1 bg-muted border border-border rounded text-muted-foreground font-medium">
-                                {t}
+                                {tech.name}
                             </span>
                         ))}
                     </div>
 
                     <div className="flex justify-between items-center pt-3 border-t border-border">
-                        <a href={githubLink} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground text-xs flex items-center gap-1 transition-colors">
+                        <a href={github_link} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground text-xs flex items-center gap-1 transition-colors">
                             <FaGithub /> GitHub
                         </a>
 
-                        {deployLink ? (
-                            <a href={deployLink} target="_blank" rel="noopener noreferrer" className="text-primary hover:text-primary/80 text-xs font-bold flex items-center gap-1 transition-colors">
+                        {deploy_link ? (
+                            <a href={deploy_link} target="_blank" rel="noopener noreferrer" className="text-primary hover:text-primary/80 text-xs font-bold flex items-center gap-1 transition-colors">
                                 Live Demo <FaExternalLinkAlt className="text-[10px]" />
                             </a>
                         ) : (

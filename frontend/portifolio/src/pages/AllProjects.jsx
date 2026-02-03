@@ -1,25 +1,53 @@
 import React, { useState, useEffect } from 'react';
-import { FaSearch, FaArrowRight } from 'react-icons/fa';
+import { FaSearch, FaArrowRight, FaSpinner } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
+import axios from 'axios';
 
 import CompactProjectCard from '../components/ui/CompactProjectCard';
 import FilterButton from '../components/ui/FilterButton';
 import EmptyState from '../components/ui/EmptyState';
-import { PROJECTS, FILTERS } from '../data/projectsData';
+import { FILTERS } from '../data/projectsData';
 
 const AllProjects = () => {
+
+    const [projects, setProjects] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState(null);
+
     const [filter, setFilter] = useState('todos');
     const [searchTerm, setSearchTerm] = useState('');
 
     useEffect(() => {
         window.scrollTo(0, 0);
+
+        const fetchProjects = async () => {
+            try {
+                setIsLoading(true);
+                const response = await axios.get('http://localhost:8000/api/v1/projects');
+                setProjects(response.data);
+            } catch (err) {
+                console.error("Erro ao buscar projetos:", err);
+                setError("Não foi possível carregar os projetos. Tente novamente mais tarde.");
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchProjects();
     }, []);
 
-    const filteredProjects = PROJECTS.filter(project => {
-        const matchesCategory = filter === 'todos' || project.category === filter;
+    const filteredProjects = projects.filter(project => {
+
+        const dbCategoryNormalized = project.category.toLowerCase().replace(/\s+/g, '');
+
+        const filterNormalized = filter.toLowerCase().replace(/\s+/g, '');
+
+        const matchesCategory = filter === 'todos' || dbCategoryNormalized === filterNormalized;
+
         const matchesSearch = project.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            project.tech.some(t => t.toLowerCase().includes(searchTerm.toLowerCase()));
+            project.technologies.some(t => t.name.toLowerCase().includes(searchTerm.toLowerCase()));
+
         return matchesCategory && matchesSearch;
     });
 
@@ -63,26 +91,43 @@ const AllProjects = () => {
                     </div>
                 </div>
             </div>
+            {isLoading && (
+                <div className="flex flex-col items-center justify-center py-20 text-muted-foreground">
+                    <FaSpinner className="animate-spin text-4xl text-primary mb-4" />
+                    <p>Carregando projetos do servidor...</p>
+                </div>
+            )}
 
-            <motion.div
-                layout
-                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
-            >
-                <AnimatePresence mode='popLayout'>
-                    {filteredProjects.length > 0 ? (
-                        filteredProjects.map((project) => (
-                            <CompactProjectCard key={project.id} project={project} />
-                        ))
-                    ) : (
-                        <EmptyState
-                            title="Nenhum projeto encontrado"
-                            message={`Não encontramos nada para "${searchTerm}" na categoria "${filter}".`}
-                            actionLabel="Limpar Filtros"
-                            onAction={() => { setFilter('todos'); setSearchTerm('') }}
-                        />
-                    )}
-                </AnimatePresence>
-            </motion.div>
+            {error && !isLoading && (
+                <EmptyState
+                    title="Erro de Conexão"
+                    message={error}
+                    actionLabel="Tentar Novamente"
+                    onAction={() => window.location.reload()}
+                />
+            )}
+
+            {!isLoading && !error && (
+                <motion.div
+                    layout
+                    className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+                >
+                    <AnimatePresence mode='popLayout'>
+                        {filteredProjects.length > 0 ? (
+                            filteredProjects.map((project) => (
+                                <CompactProjectCard key={project.id} project={project} />
+                            ))
+                        ) : (
+                            <EmptyState
+                                title="Nenhum projeto encontrado"
+                                message={`Não encontramos nada para "${searchTerm}" na categoria "${filter}".`}
+                                actionLabel="Limpar Filtros"
+                                onAction={() => { setFilter('todos'); setSearchTerm('') }}
+                            />
+                        )}
+                    </AnimatePresence>
+                </motion.div>
+            )}
         </div>
     );
 };

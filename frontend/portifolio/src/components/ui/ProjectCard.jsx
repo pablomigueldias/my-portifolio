@@ -4,9 +4,11 @@ import { motion } from 'framer-motion';
 import { FaGithub, FaExternalLinkAlt } from 'react-icons/fa';
 
 const ProjectCard = ({ project }) => {
+    // 1. Adaptação para o padrão do Banco de Dados
     const MAX_TAGS = 3;
-    const showMoreTags = project.tech.length > MAX_TAGS;
-    const displayedTags = project.tech.slice(0, MAX_TAGS);
+    const technologies = project.technologies || [];
+    const showMoreTags = technologies.length > MAX_TAGS;
+    const displayedTags = technologies.slice(0, MAX_TAGS);
 
     return (
         <motion.div
@@ -19,7 +21,7 @@ const ProjectCard = ({ project }) => {
         >
             <Link to={`/projeto/${project.id}`} className="block relative h-48 overflow-hidden cursor-pointer flex-shrink-0">
                 <img
-                    src={project.image}
+                    src={project.image_url} // AJUSTE: image_url
                     alt={project.title}
                     loading="lazy"
                     className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700"
@@ -40,29 +42,29 @@ const ProjectCard = ({ project }) => {
                 </Link>
 
                 <p className="text-muted-foreground text-sm mb-4 line-clamp-3 min-h-[60px]">
-                    {project.description}
+                    {project.short_description} {/* AJUSTE: short_description */}
                 </p>
 
                 <div className="mt-auto">
                     <div className="flex flex-wrap gap-2 mb-6">
-                        {displayedTags.map((tech, i) => (
+                        {displayedTags.map((techObj, i) => (
                             <span key={i} className="px-2 py-1 bg-muted text-muted-foreground text-[10px] font-medium rounded border border-border">
-                                {tech}
+                                {techObj.name} {/* AJUSTE: Acessando techObj.name */}
                             </span>
                         ))}
                         {showMoreTags && (
                             <span className="px-2 py-1 bg-muted/50 text-muted-foreground text-[10px] rounded border border-border/50">
-                                +{project.tech.length - MAX_TAGS}
+                                +{technologies.length - MAX_TAGS}
                             </span>
                         )}
                     </div>
 
                     <div className="flex items-center gap-4 pt-4 border-t border-border">
-                        <a href={project.githubLink} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-muted-foreground hover:text-foreground text-xs font-bold uppercase tracking-wider transition-colors">
+                        <a href={project.github_link} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-muted-foreground hover:text-foreground text-xs font-bold uppercase tracking-wider transition-colors">
                             <FaGithub size={14} /> Code
                         </a>
-                        {project.deployLink && (
-                            <a href={project.deployLink} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-muted-foreground hover:text-primary text-xs font-bold uppercase tracking-wider transition-colors ml-auto">
+                        {project.deploy_link && (
+                            <a href={project.deploy_link} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-muted-foreground hover:text-primary text-xs font-bold uppercase tracking-wider transition-colors ml-auto">
                                 Live Demo <FaExternalLinkAlt size={12} />
                             </a>
                         )}
