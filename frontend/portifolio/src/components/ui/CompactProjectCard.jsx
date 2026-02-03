@@ -2,18 +2,17 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { FaGithub, FaExternalLinkAlt, FaArrowRight } from 'react-icons/fa';
+import DynamicIcon from './DynamicIcon'
 
 const CompactProjectCard = ({ project }) => {
     if (!project) return null;
-
-    // Destructuring adaptado para o padrão do Banco de Dados (Snake Case)
     const {
         id,
         title = "Projeto Sem Título",
         category = "Geral",
         image_url = "https://placehold.co/600x400?text=No+Image",
         short_description = "",
-        technologies = [], // Agora é um Array de Objetos [{name: "React", ...}]
+        technologies = [],
         github_link = "#",
         deploy_link
     } = project;
@@ -52,10 +51,10 @@ const CompactProjectCard = ({ project }) => {
 
                 <div className="mt-auto">
 
-                    {/* Renderização das Tecnologias (Acessando t.name) */}
                     <div className="flex flex-wrap gap-2 mb-4">
                         {technologies.slice(0, 3).map((tech, i) => (
                             <span key={i} className="text-[10px] px-2 py-1 bg-muted border border-border rounded text-muted-foreground font-medium">
+                                <DynamicIcon iconName={tech.icon_key || 'FaCode'} className="w-3 h-3" />
                                 {tech.name}
                             </span>
                         ))}

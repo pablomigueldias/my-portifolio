@@ -2,9 +2,9 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { FaGithub, FaExternalLinkAlt } from 'react-icons/fa';
+import DynamicIcon from './DynamicIcon';
 
 const ProjectCard = ({ project }) => {
-    // 1. Adaptação para o padrão do Banco de Dados
     const MAX_TAGS = 3;
     const technologies = project.technologies || [];
     const showMoreTags = technologies.length > MAX_TAGS;
@@ -21,7 +21,7 @@ const ProjectCard = ({ project }) => {
         >
             <Link to={`/projeto/${project.id}`} className="block relative h-48 overflow-hidden cursor-pointer flex-shrink-0">
                 <img
-                    src={project.image_url} // AJUSTE: image_url
+                    src={project.image_url}
                     alt={project.title}
                     loading="lazy"
                     className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700"
@@ -42,14 +42,15 @@ const ProjectCard = ({ project }) => {
                 </Link>
 
                 <p className="text-muted-foreground text-sm mb-4 line-clamp-3 min-h-[60px]">
-                    {project.short_description} {/* AJUSTE: short_description */}
+                    {project.short_description}
                 </p>
 
                 <div className="mt-auto">
                     <div className="flex flex-wrap gap-2 mb-6">
                         {displayedTags.map((techObj, i) => (
                             <span key={i} className="px-2 py-1 bg-muted text-muted-foreground text-[10px] font-medium rounded border border-border">
-                                {techObj.name} {/* AJUSTE: Acessando techObj.name */}
+                                <DynamicIcon iconName={techObj.icon_key || 'FaCode'} className="w-3 h-3" />
+                                {techObj.name}
                             </span>
                         ))}
                         {showMoreTags && (

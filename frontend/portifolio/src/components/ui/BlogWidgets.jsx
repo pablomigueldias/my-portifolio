@@ -9,7 +9,7 @@ export const RecentPostsWidget = ({ posts }) => (
         </h3>
         <div className="space-y-6">
             {posts.map((recent) => (
-                <Link key={recent.id} to={`/blog/${recent.id}`} className="flex gap-4 group">
+                <Link key={recent.id} to={`/blog/${recent.slug}`} className="flex gap-4 group">
                     <div className="w-20 h-20 rounded-lg overflow-hidden shrink-0 border border-border">
                         <img
                             src={recent.image}

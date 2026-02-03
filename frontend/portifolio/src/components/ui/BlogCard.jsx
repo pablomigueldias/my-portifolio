@@ -18,7 +18,7 @@ const BlogCard = ({ post }) => {
             whileHover={{ y: -5 }}
             className="group flex flex-col bg-card border border-border rounded-2xl overflow-hidden hover:border-primary/50 transition-all duration-300 shadow-sm hover:shadow-xl hover:shadow-primary/5 h-full"
         >
-            <Link to={`/blog/${post.id}`} className="h-48 md:h-52 overflow-hidden relative block cursor-pointer shrink-0">
+            <Link to={`/blog/${post.slug}`}className="h-48 md:h-52 overflow-hidden relative block cursor-pointer shrink-0">
                 <img
                     src={post.image}
                     alt={post.title}

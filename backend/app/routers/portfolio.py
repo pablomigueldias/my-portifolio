@@ -26,12 +26,6 @@ def get_projects(db: Session = Depends(get_db)):
     return service.list_projects()
 
 
-@router.get("/technologies", response_model=List[TechnologyRead], summary="Listar tecnologias")
-def get_technologies(db: Session = Depends(get_db)):
-
-    service = PortfolioService(db)
-    return service.list_technologies()
-
 @router.patch("/projects/{project_id}", response_model=ProjectRead, summary="Atualizar um projeto")
 def update_project(project_id: int, project_in: ProjectUpdate, db: Session = Depends(get_db)):
 

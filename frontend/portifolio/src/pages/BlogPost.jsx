@@ -1,44 +1,67 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { FaArrowLeft, FaCalendar, FaUser, FaClock, FaTag } from 'react-icons/fa';
+import { FaArrowLeft, FaCalendar, FaUser, FaClock, FaTag, FaSpinner } from 'react-icons/fa';
 import { motion } from 'framer-motion';
 
-
-import MarkdownRenderer from '../components/ui/MarkdownRenderer';
 import { RecentPostsWidget, TopicsWidget, NewsletterWidget } from '../components/ui/BlogWidgets';
 import EmptyState from '../components/ui/EmptyState';
-import { BLOG_POSTS, BLOG_TAGS, POST_CONTENT_MOCK } from '../data/blogData';
+import MarkdownRenderer from '../components/ui/MarkdownRenderer';
+import { blogService } from '../services/api';
 
 const BlogPost = () => {
-    const { id } = useParams();
+
+    const { slug } = useParams();
+
     const [post, setPost] = useState(null);
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState(null);
 
     useEffect(() => {
-        const foundPost = BLOG_POSTS.find(p => p.id === Number(id));
-        
-        if (foundPost) {
-            setPost({ ...foundPost, content: POST_CONTENT_MOCK });
+        const fetchPost = async () => {
+            try {
+                setIsLoading(true);
+                const data = await blogService.getPostBySlug(slug);
+
+                setPost({
+                    ...data,
+                    image: data.image_url,
+                    date: new Date(data.create_at).toLocaleDateString('pt-BR'),
+                    readTime: data.read_time
+                });
+            } catch (err) {
+                console.error("Erro ao carregar o artigo:", err);
+                setError(true);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        if (slug) {
+            fetchPost();
         }
-        
         window.scrollTo(0, 0);
-    }, [id]);
+    }, [slug]);
 
-    if (!post && id) {
+    if (isLoading) {
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-background">
+                <FaSpinner className="animate-spin text-primary text-4xl" />
+            </div>
+        );
+    }
 
-         const exists = BLOG_POSTS.some(p => p.id === Number(id));
-         if(!exists) return (
-            <div className="pt-20 max-w-4xl mx-auto px-4">
-                <EmptyState 
-                    title="Artigo não encontrado" 
+    if (error || !post) {
+        return (
+            <div className="pt-20 max-w-4xl mx-auto px-4 bg-background min-h-screen">
+                <EmptyState
+                    title="Artigo não encontrado"
                     message="O artigo que você procura não existe ou foi removido."
                     actionLabel="Voltar ao Blog"
                     onAction={() => window.history.back()}
                 />
             </div>
-         );
+        );
     }
-
-    if (!post) return null;
 
     return (
         <div className="min-h-screen pb-20 pt-8 transition-colors duration-300 w-full overflow-hidden bg-background">
@@ -76,19 +99,21 @@ const BlogPost = () => {
                             </div>
                         </header>
 
-                        <div className="w-full aspect-video rounded-2xl overflow-hidden mb-12 border border-border shadow-2xl shadow-primary/5 bg-muted relative z-0">
-                            <img src={post.image} alt="Capa" className="w-full h-full object-cover" />
+                        {post.image && (
+                            <div className="w-full aspect-video rounded-2xl overflow-hidden mb-12 border border-border shadow-2xl shadow-primary/5 bg-muted relative z-0">
+                                <img src={post.image} alt={post.title} className="w-full h-full object-cover" />
+                            </div>
+                        )}
+
+                        <div className="w-full">
+                            <MarkdownRenderer content={post.content} />
                         </div>
 
-                        <MarkdownRenderer content={post.content} />
-
                     </motion.article>
-
                     <aside className="lg:col-span-4 space-y-8 mt-12 lg:mt-0">
                         <div className="lg:sticky lg:top-24 space-y-8">
-                            <RecentPostsWidget posts={BLOG_POSTS.slice(0, 3)} />
-                            <TopicsWidget tags={BLOG_TAGS} />
-                            <NewsletterWidget />
+                            <TopicsWidget tags={["Banco de Dados", "Python"]} />
+                            {/* <NewsletterWidget />*/}
                         </div>
                     </aside>
 

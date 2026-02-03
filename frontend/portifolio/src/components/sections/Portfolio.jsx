@@ -6,7 +6,6 @@ import axios from 'axios';
 
 import ProjectCard from '../ui/ProjectCard';
 import FilterButton from '../ui/FilterButton';
-// Removemos PROJECTS, mantemos apenas FILTERS que é estático da UI
 import { FILTERS } from '../../data/projectsData';
 
 const Portfolio = () => {
@@ -16,7 +15,6 @@ const Portfolio = () => {
     const [error, setError] = useState(null);
     const [filter, setFilter] = useState('todos');
 
-    // 2. Busca na API (Efeito)
     useEffect(() => {
         const fetchProjects = async () => {
             try {
@@ -34,8 +32,6 @@ const Portfolio = () => {
         fetchProjects();
     }, []);
 
-    // 3. Lógica de Filtro aplicada nos dados reais
-    // No arquivo Portfolio.jsx:
     const filteredProjects = filter === 'todos'
         ? projects
         : projects.filter(project => {
@@ -44,7 +40,6 @@ const Portfolio = () => {
             return dbCat === filterCat;
         });
 
-    // Na home, mostramos apenas os 6 primeiros (Destaques)
     const displayProjects = filteredProjects.slice(0, 6);
 
     return (
@@ -77,21 +72,17 @@ const Portfolio = () => {
                     </div>
                 </div>
 
-                {/* Tratamento de Loading */}
                 {isLoading && (
                     <div className="flex justify-center items-center py-20 text-muted-foreground">
                         <FaSpinner className="animate-spin text-4xl text-primary" />
                     </div>
                 )}
-
-                {/* Tratamento de Erro */}
                 {error && !isLoading && (
                     <div className="text-center py-10 text-red-500 font-bold">
                         {error}
                     </div>
                 )}
 
-                {/* Grid de Projetos Reais */}
                 {!isLoading && !error && (
                     <motion.div
                         layout
@@ -104,8 +95,6 @@ const Portfolio = () => {
                         </AnimatePresence>
                     </motion.div>
                 )}
-
-                {/* Contador Dinâmico: projects.length */}
                 {!isLoading && (
                     <div className="mt-16 text-center">
                         <Link to="/projects">
