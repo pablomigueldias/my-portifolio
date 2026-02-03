@@ -1,29 +1,75 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FaSearch, FaTag, FaTimes } from 'react-icons/fa';
+import { FaSearch, FaTag, FaTimes, FaSpinner } from 'react-icons/fa';
 
 import BlogCard from '../components/ui/BlogCard';
 import EmptyState from '../components/ui/EmptyState';
 import SectionTitle from '../components/ui/SectionTitle';
 import { RecentPostsWidget } from '../components/ui/BlogWidgets';
-import { BLOG_POSTS } from '../data/blogData';
+
+import { blogService } from '../services/api';
 
 const Blog = () => {
+    const [posts, setPosts] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState(null);
+
     const [searchQuery, setSearchQuery] = useState("");
     const [selectedCategory, setSelectedCategory] = useState("Todas");
 
-    const categories = useMemo(() => {
-        return ["Todas", ...new Set(BLOG_POSTS.map(post => post.category))];
+    useEffect(() => {
+        const fetchPosts = async () => {
+            try {
+                setIsLoading(true);
+                const data = await blogService.getAllPosts();
+
+                const formattedPosts = data.map(post => ({
+                    ...post,
+                    image: post.image_url,
+                    date: new Date(post.create_at).toLocaleDateString('pt-BR'), // 
+                    readTime: post.read_time
+                }));
+
+                setPosts(formattedPosts);
+            } catch (err) {
+                console.error("Erro na API:", err);
+                setError("Falha ao carregar os artigos. Tente novamente mais tarde.");
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchPosts();
     }, []);
 
-    const filteredPosts = BLOG_POSTS.filter(post => {
+    const categories = useMemo(() => {
+        return ["Todas", ...new Set(posts.map(post => post.category))];
+    }, [posts]);
+
+    const filteredPosts = posts.filter(post => {
         const matchesSearch = post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
             post.excerpt.toLowerCase().includes(searchQuery.toLowerCase());
         const matchesCategory = selectedCategory === "Todas" || post.category === selectedCategory;
         return matchesSearch && matchesCategory;
     });
 
-    const recentPosts = BLOG_POSTS.slice(0, 3);
+    const recentPosts = posts.slice(0, 3);
+
+    if (isLoading) {
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-background">
+                <FaSpinner className="animate-spin text-primary text-4xl" />
+            </div>
+        );
+    }
+
+    if (error) {
+        return (
+            <div className="min-h-screen pt-20 px-4 bg-background">
+                <EmptyState title="Oops!" message={error} actionLabel="Tentar novamente" onAction={() => window.location.reload()} />
+            </div>
+        );
+    }
 
     return (
         <section className="min-h-screen pb-20 pt-8 transition-colors duration-300 bg-background">

@@ -58,3 +58,4 @@ Thumbs.db
 ### --- Ferramentas de Design --- ###
 *.fig
 *.xd
+.env

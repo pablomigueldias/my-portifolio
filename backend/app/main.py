@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.routers import portfolio
 from app.routers import technologies
+from app.routers import blog
 
 app = FastAPI(
     title="Portfolio API",
@@ -16,8 +17,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(portfolio.router, prefix="/api/v1", tags=["Portfolio"])
+app.include_router(portfolio.router, prefix="/api/v1")
 app.include_router(technologies.router, prefix="/api/v1")
+app.include_router(blog.router, prefix="/api/v1")
 
 
 @app.get("/")

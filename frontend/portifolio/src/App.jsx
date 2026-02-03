@@ -41,7 +41,7 @@ function App() {
             <Route path="/projects" element={<AllProjects />} />
             <Route path="/projeto/:id" element={<ProjectDetails />} />
             <Route path="/blog" element={<Blog />} />
-            <Route path="/blog/:id" element={<BlogPost />} />
+            <Route path="/blog/:slug" element={<BlogPost />} />
             <Route path="/templates" element={<TemplatesGallery />} />
             <Route path="/contact" element={<Contact />} />
           </Routes>
