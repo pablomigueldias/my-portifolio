@@ -1,9 +1,9 @@
-# 🌐 Full-Stack Professional Portfolio | Python & React Ecosystem
+# Full-Stack Professional Portfolio | Python & React Ecosystem
 
 This repository contains the complete infrastructure for my professional portfolio and technical blog. The project was designed to demonstrate the integration of a **Serverless** ecosystem with a **RESTful architecture**, following modern software development best practices such as **Clean Architecture**, **SOLID principles**, and **CI/CD** pipelines.
 
 
-## 🏗️ Architecture & Technical Decisions
+## Architecture & Technical Decisions
 
 The system is decoupled into two independent cores communicating via a structured API:
 
