@@ -9,17 +9,18 @@ import FilterButton from '../ui/FilterButton.jsx';
 import { FILTERS } from '../../data/projectsData.js';
 
 const Portfolio = () => {
-    // 1. Estados Dinâmicos
     const [projects, setProjects] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
     const [filter, setFilter] = useState('todos');
 
+    const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api/v1';
+
     useEffect(() => {
         const fetchProjects = async () => {
             try {
                 setIsLoading(true);
-                const response = await axios.get('http://localhost:8000/api/v1/projects');
+                const response = await axios.get(`${API_URL}/projects`);
                 setProjects(response.data);
             } catch (err) {
                 console.error("Erro ao carregar projetos:", err);
@@ -30,7 +31,7 @@ const Portfolio = () => {
         };
 
         fetchProjects();
-    }, []);
+    }, [API_URL]);
 
     const filteredProjects = filter === 'todos'
         ? projects
@@ -45,9 +46,7 @@ const Portfolio = () => {
     return (
         <section id="portfolio" className="py-20 border-b border-border bg-background transition-colors duration-300">
             <div className="max-w-6xl mx-auto px-4">
-
                 <div className="mb-12 flex flex-col lg:flex-row lg:items-end justify-between gap-8">
-
                     <div className="max-w-xl">
                         <span className="text-primary font-mono text-xs md:text-sm tracking-widest uppercase flex items-center gap-2">
                             <FaLayerGroup /> Meu Trabalho
@@ -80,6 +79,7 @@ const Portfolio = () => {
                 {error && !isLoading && (
                     <div className="text-center py-10 text-red-500 font-bold">
                         {error}
+                        <p className="text-xs font-normal mt-2">Tentando conectar em: {API_URL}</p>
                     </div>
                 )}
 
@@ -105,7 +105,6 @@ const Portfolio = () => {
                         </Link>
                     </div>
                 )}
-
             </div>
         </section>
     );

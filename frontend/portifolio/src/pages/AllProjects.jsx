@@ -18,13 +18,15 @@ const AllProjects = () => {
     const [filter, setFilter] = useState('todos');
     const [searchTerm, setSearchTerm] = useState('');
 
+    const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api/v1';
+
     useEffect(() => {
         window.scrollTo(0, 0);
 
         const fetchProjects = async () => {
             try {
                 setIsLoading(true);
-                const response = await axios.get('http://localhost:8000/api/v1/projects');
+                const response = await axios.get(`${API_URL}/projects`);
                 setProjects(response.data);
             } catch (err) {
                 console.error("Erro ao buscar projetos:", err);
@@ -35,16 +37,12 @@ const AllProjects = () => {
         };
 
         fetchProjects();
-    }, []);
+    }, [API_URL]);
 
     const filteredProjects = projects.filter(project => {
-
         const dbCategoryNormalized = project.category.toLowerCase().replace(/\s+/g, '');
-
         const filterNormalized = filter.toLowerCase().replace(/\s+/g, '');
-
         const matchesCategory = filter === 'todos' || dbCategoryNormalized === filterNormalized;
-
         const matchesSearch = project.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
             project.technologies.some(t => t.name.toLowerCase().includes(searchTerm.toLowerCase()));
 
@@ -53,7 +51,6 @@ const AllProjects = () => {
 
     return (
         <div className="min-h-screen pb-20 pt-8 max-w-7xl mx-auto px-4">
-
             <div className="mb-12 space-y-8">
                 <motion.div
                     initial={{ opacity: 0, y: -20 }}
@@ -66,7 +63,6 @@ const AllProjects = () => {
                 </motion.div>
 
                 <div className="flex flex-col lg:flex-row gap-6 justify-between items-start lg:items-center bg-card p-4 rounded-2xl border border-border shadow-sm">
-
                     <div className="relative w-full lg:w-96 group">
                         <FaSearch className="absolute left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground group-focus-within:text-primary transition-colors" />
                         <input
@@ -95,13 +91,14 @@ const AllProjects = () => {
                 <div className="flex flex-col items-center justify-center py-20 text-muted-foreground">
                     <FaSpinner className="animate-spin text-4xl text-primary mb-4" />
                     <p>Carregando projetos do servidor...</p>
+                    <p className="text-xs mt-2 opacity-50">Conectando em: {API_URL}</p>
                 </div>
             )}
 
             {error && !isLoading && (
                 <EmptyState
                     title="Erro de Conexão"
-                    message={error}
+                    message={`${error} (Tentando em: ${API_URL})`}
                     actionLabel="Tentar Novamente"
                     onAction={() => window.location.reload()}
                 />

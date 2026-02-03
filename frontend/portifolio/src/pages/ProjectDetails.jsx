@@ -2,8 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { FaArrowLeft, FaTools, FaSpinner } from 'react-icons/fa';
-import axios from 'axios';
 
+// IMPORTAMOS O SERVIÇO EM VEZ DO AXIOS DIRETAMENTE
+import { portfolioService } from '../services/api';
 
 import EmptyState from '../components/ui/EmptyState';
 import { TechStackWidget, ProjectActionsWidget, ChallengeCard } from '../components/ui/ProjectWidgets';
@@ -16,15 +17,17 @@ const ProjectDetails = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
 
+    const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api/v1';
+
     useEffect(() => {
         window.scrollTo(0, 0);
 
         const fetchProject = async () => {
             try {
                 setIsLoading(true);
-                const response = await axios.get('http://localhost:8000/api/v1/projects');
+                const data = await portfolioService.getProjects();
 
-                const foundProject = response.data.find(p => p.id === parseInt(id));
+                const foundProject = data.find(p => p.id === parseInt(id));
 
                 if (!foundProject) {
                     setError("Projeto não encontrado no banco de dados.");
@@ -33,14 +36,14 @@ const ProjectDetails = () => {
                 }
             } catch (err) {
                 console.error("Erro ao buscar o projeto:", err);
-                setError("Erro de conexão com o servidor. Tente novamente mais tarde.");
+                setError(`Erro de conexão com o servidor. (Endpoint: ${API_URL})`);
             } finally {
                 setIsLoading(false);
             }
         };
 
         fetchProject();
-    }, [id]);
+    }, [id, API_URL]);
 
     if (isLoading) {
         return (
@@ -63,8 +66,8 @@ const ProjectDetails = () => {
             </div>
         );
     }
+
     const challenges = project.challenges || [];
-    const technologies = project.technologies || [];
     const description = project.long_description || project.short_description;
 
     return (
@@ -74,7 +77,6 @@ const ProjectDetails = () => {
             variants={staggerContainer}
             className="min-h-screen pb-20 pt-8 transition-colors duration-300"
         >
-
             <div className="max-w-6xl mx-auto px-4 mb-6">
                 <Link to="/projects" className="flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors w-fit group text-sm font-bold uppercase tracking-wide">
                     <FaArrowLeft className="group-hover:-translate-x-1 transition-transform" /> Voltar para Projetos
@@ -91,9 +93,7 @@ const ProjectDetails = () => {
                         alt={project.title}
                         className="w-full h-full object-cover"
                     />
-
                     <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent"></div>
-
                     <div className="absolute bottom-6 left-6 md:bottom-12 md:left-12 max-w-2xl pr-4">
                         <span className="px-3 py-1 bg-primary/20 text-primary border border-primary/30 backdrop-blur-md rounded-lg text-[10px] md:text-xs font-mono uppercase tracking-wider mb-4 inline-block font-bold">
                             {project.category}
@@ -106,9 +106,7 @@ const ProjectDetails = () => {
             </div>
 
             <div className="max-w-6xl mx-auto px-4 grid grid-cols-1 lg:grid-cols-3 gap-12">
-
                 <div className="lg:col-span-2 space-y-12">
-
                     <motion.section variants={fadeInUp}>
                         <h2 className="text-2xl font-bold mb-6 text-foreground flex items-center gap-2">
                             <span className="w-2 h-8 bg-primary rounded-full"></span>
@@ -139,13 +137,11 @@ const ProjectDetails = () => {
                     className="space-y-8 lg:sticky lg:top-24 h-fit"
                 >
                     <TechStackWidget techs={project.technologies} />
-
                     <ProjectActionsWidget
                         githubLink={project.github_link}
                         deployLink={project.deploy_link}
                     />
                 </motion.div>
-
             </div>
         </motion.div>
     );

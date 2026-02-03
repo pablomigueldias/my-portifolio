@@ -7,24 +7,24 @@ export const api = axios.create({
 
 export const portfolioService = {
   getProjects: async () => {
-    const response = await api.get('/api/v1/projects');
+    const response = await api.get('/projects');
     return response.data;
   },
   
   getTechnologies: async () => {
-    const response = await api.get('/api/v1/technologies');
+    const response = await api.get('/technologies');
     return response.data;
   }
 };
 
 export const blogService = {
   getAllPosts: async (skip = 0, limit = 10) => {
-    const response = await api.get(`/api/v1/blog/?skip=${skip}&limit=${limit}`);
+    const response = await api.get(`/blog/?skip=${skip}&limit=${limit}`);
     return response.data;
   },
 
   getPostBySlug: async (slug) => {
-    const response = await api.get(`/api/v1/blog/${slug}`);
+    const response = await api.get(`/blog/${slug}`);
     return response.data;
   }
 };
