@@ -1,16 +1,52 @@
-# React + Vite
+# 🌐 Full-Stack Professional Portfolio | Python & React Ecosystem
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This repository contains the complete infrastructure for my professional portfolio and technical blog. The project was designed to demonstrate the integration of a **Serverless** ecosystem with a **RESTful architecture**, following modern software development best practices such as **Clean Architecture**, **SOLID principles**, and **CI/CD** pipelines.
 
-Currently, two official plugins are available:
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 🏗️ Architecture & Technical Decisions
 
-## React Compiler
+The system is decoupled into two independent cores communicating via a structured API:
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### **Backend (The Core)**
+* **Engine:** **FastAPI** (Python 3.12+), selected for high performance and native asynchronous support with **Pydantic** for data validation.
+* **Environment:** Strict dependency management using **Poetry**, ensuring build reproducibility and environment isolation.
+* **Persistence:** **PostgreSQL** (via Neon Serverless) utilizing **SQLAlchemy** (ORM) and **Alembic** for robust database schema migrations.
+* **Automation:** Integration with **python-slugify** for SEO-friendly URLs and **Cloudinary** for dynamic asset management.
 
-## Expanding the ESLint configuration
+### **Frontend (The Interface)**
+* **Tech Stack:** **React 19** + **Vite**, focused on optimized rendering and ultra-fast build times.
+* **UI/UX:** Advanced styling with **Tailwind CSS** and fluid animations via **Framer Motion**.
+* **Communication:** **Axios** with centralized instances to dynamically manage base URLs across development and production environments.
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+---
+
+## 🚀 Key Features
+
+* **Dynamic API:** Automatic documentation via **Swagger UI** (OpenAPI) available at `/docs` in the production environment.
+* **Technical Blog Engine:** Native **Markdown** and **Syntax Highlighting** support, allowing for technical articles to be served directly from the database.
+* **Advanced Filtering:** Real-time project filtering system (Data Science, Backend, Fullstack) with state persistence.
+* **Hybrid Environment:** Intelligent configuration that toggles between `localhost:8000` (development) and the production server (Render) via environment variables.
+
+---
+
+## 🛠️ Setup & Installation
+
+### **Prerequisites**
+* Python 3.12+
+* Node.js 20+
+* Poetry (Python package manager)
+
+### **Backend Execution**
+```bash
+cd backend
+poetry install
+poetry run alembic upgrade head
+poetry run uvicorn app.main:app --reload
+```
+
+### **Frontend Execution**
+```bash
+cd frontend
+npm install
+npm run dev
+```
