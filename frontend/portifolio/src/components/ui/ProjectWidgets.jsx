@@ -1,5 +1,6 @@
 import React from 'react';
 import { FaGithub, FaExternalLinkAlt, FaLayerGroup } from 'react-icons/fa';
+import DynamicIcon from './DynamicIcon';
 
 export const TechStackWidget = ({ techs = [] }) => (
     <div className="p-6 bg-card border border-border rounded-2xl shadow-sm">
@@ -8,8 +9,18 @@ export const TechStackWidget = ({ techs = [] }) => (
         </h3>
         <div className="flex flex-wrap gap-2">
             {techs.map((tech) => (
-                <span key={tech} className="px-3 py-1.5 bg-muted text-muted-foreground text-sm font-medium rounded-lg border border-border">
-                    {tech}
+                <span
+                    key={tech.id}
+                    className="px-3 py-1.5 bg-muted text-muted-foreground text-sm font-medium rounded-lg border border-border flex items-center gap-2"
+                >
+                    {/* 1. Usamos tech.icon_key conforme descobrimos no banco */}
+                    {/* 2. Fallback para 'Sicodesignal' ou similar da lib Si se o ícone falhar */}
+                    <DynamicIcon
+                        iconName={tech.icon_key || 'SiCodeforces'}
+                        className="w-4 h-4 text-primary"
+                    />
+                    {/* 3. Renderizamos a string do nome, não o objeto */}
+                    {tech.name}
                 </span>
             ))}
         </div>

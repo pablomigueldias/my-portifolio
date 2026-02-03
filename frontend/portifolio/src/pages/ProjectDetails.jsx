@@ -138,7 +138,7 @@ const ProjectDetails = () => {
                     variants={fadeInUp}
                     className="space-y-8 lg:sticky lg:top-24 h-fit"
                 >
-                    <TechStackWidget techs={technologies.map(t => t.name)} />
+                    <TechStackWidget techs={project.technologies} />
 
                     <ProjectActionsWidget
                         githubLink={project.github_link}
