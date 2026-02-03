@@ -5,7 +5,7 @@ from typing import List
 
 
 from app.models.portfolio import Project, Technology, Challenge, project_tech_link
-from app.schemas.project import ProjectCreate
+from app.schemas.project import ProjectCreate, ProjectUpdate
 from app.schemas.technology import TechnologyCreate
 
 
@@ -75,3 +75,25 @@ class PortfolioService:
 
     def list_projects(self) -> List[Project]:
         return self.db.query(Project).all()
+
+    def update_project(self, project_id: int, project_in: "ProjectUpdate") -> Project:
+
+        db_project = self.db.query(Project).filter(
+            Project.id == project_id).first()
+        if not db_project:
+            raise HTTPException(
+                status_code=404, detail="Projeto não encontrado.")
+
+        update_data = project_in.model_dump(exclude_unset=True)
+
+        for field, value in update_data.items():
+            setattr(db_project, field, value)
+
+        try:
+            self.db.commit()
+            self.db.refresh(db_project)
+            return db_project
+        except Exception as e:
+            self.db.rollback()
+            raise HTTPException(
+                status_code=500, detail=f"Erro ao atualizar: {str(e)}")

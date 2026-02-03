@@ -8,5 +8,5 @@ class SchemaBase(BaseModel):
 
 class TimestampMixin(SchemaBase):
     
-    created_at: datetime
+    create_at: datetime
     updated_at: datetime
