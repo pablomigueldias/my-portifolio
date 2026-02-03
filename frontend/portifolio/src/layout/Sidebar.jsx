@@ -121,17 +121,12 @@ const Sidebar = () => {
 
     return (
         <>
-            {/* 1. BOTÃO HAMBÚRGUER (Agora aparece até no Tablet -> lg:hidden) */}
             <button
                 onClick={() => setIsMobileOpen(true)}
-                // MUDANÇA AQUI: md:hidden -> lg:hidden
                 className="lg:hidden fixed top-4 right-4 z-[60] p-3 bg-card border border-border rounded-xl shadow-lg text-primary"
             >
                 <FaBars size={24} />
             </button>
-
-            {/* 2. SIDEBAR DESKTOP (Agora só aparece em telas Grandes -> hidden lg:flex) */}
-            {/* MUDANÇA AQUI: hidden md:flex -> hidden lg:flex */}
             <aside className="hidden lg:flex fixed left-0 top-0 h-screen w-72 bg-card border-r border-border flex-col z-50 shadow-2xl">
                 <SidebarContent />
             </aside>

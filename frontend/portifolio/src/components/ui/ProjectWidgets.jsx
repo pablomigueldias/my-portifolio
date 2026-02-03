@@ -13,13 +13,10 @@ export const TechStackWidget = ({ techs = [] }) => (
                     key={tech.id}
                     className="px-3 py-1.5 bg-muted text-muted-foreground text-sm font-medium rounded-lg border border-border flex items-center gap-2"
                 >
-                    {/* 1. Usamos tech.icon_key conforme descobrimos no banco */}
-                    {/* 2. Fallback para 'Sicodesignal' ou similar da lib Si se o ícone falhar */}
                     <DynamicIcon
                         iconName={tech.icon_key || 'SiCodeforces'}
                         className="w-4 h-4 text-primary"
                     />
-                    {/* 3. Renderizamos a string do nome, não o objeto */}
                     {tech.name}
                 </span>
             ))}
