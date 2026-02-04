@@ -7,7 +7,7 @@ from app.services.portfolio import PortfolioService
 from app.schemas.project import ProjectRead, ProjectUpdate
 from app.schemas.technology import TechnologyRead
 
-router = APIRouter()
+router = APIRouter(prefix="/projects", tags=["Portfolio"])
 
 
 def get_db():
@@ -18,15 +18,12 @@ def get_db():
         db.close()
 
 
-@router.get("/projects", response_model=List[ProjectRead], summary="Listar todos os projetos")
+@router.get("/", response_model=List[ProjectRead], summary="Listar todos os projetos")
 def get_projects(db: Session = Depends(get_db)):
-
     service = PortfolioService(db)
     return service.list_projects()
 
-
-@router.patch("/projects/{project_id}", response_model=ProjectRead, summary="Atualizar um projeto")
+@router.patch("/{project_id}", response_model=ProjectRead, summary="Atualizar um projeto")
 def update_project(project_id: int, project_in: ProjectUpdate, db: Session = Depends(get_db)):
-
     service = PortfolioService(db)
     return service.update_project(project_id, project_in)
