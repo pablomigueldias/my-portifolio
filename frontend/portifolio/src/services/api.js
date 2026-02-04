@@ -1,14 +1,25 @@
 import axios from 'axios';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api/v1';
+const getBaseURL = () => {
+  const envUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+
+  return envUrl.endsWith('/api/v1') ? envUrl : `${envUrl}/api/v1`;
+};
 
 export const api = axios.create({
-  baseURL: API_BASE_URL,
+  baseURL: getBaseURL(),
   timeout: 10000,
   headers: {
     'Content-Type': 'application/json'
   }
 });
+
+if (import.meta.env.DEV) {
+  api.interceptors.request.use(request => {
+    console.log('🚀 Request to:', request.baseURL + request.url);
+    return request;
+  });
+}
 
 export const portfolioService = {
   getProjects: async () => {
