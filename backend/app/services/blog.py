@@ -37,18 +37,15 @@ class BlogService:
 
     @staticmethod
     def update_post(db: Session, slug: str, post_data: "PostUpdate"):
-        # 1. Busca o post existente pelo Slug
         db_post = db.query(Post).filter(Post.slug == slug).first()
 
         if not db_post:
-            return None  # Retorna vazio se o post não existir
+            return None
 
-        # 2. Atualiza apenas os campos que foram enviados na requisição
         update_data = post_data.model_dump(exclude_unset=True)
         for key, value in update_data.items():
             setattr(db_post, key, value)
 
-        # 3. Salva no banco de dados
         db.commit()
         db.refresh(db_post)
         return db_post

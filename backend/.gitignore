@@ -58,3 +58,8 @@ Thumbs.db
 ### --- Ferramentas de Design --- ###
 *.fig
 *.xd
+
+__pycache__/
+*.pyc
+.venv/
+.env

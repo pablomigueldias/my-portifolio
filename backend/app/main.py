@@ -1,8 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.routers import portfolio
-from app.routers import technologies
-from app.routers import blog
+from app.routers import portfolio, technologies, blog
 
 app = FastAPI(
     title="Portfolio API",
@@ -11,17 +9,19 @@ app = FastAPI(
 )
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=[
+        "http://localhost:5173",
+        "https://my-portifolio-754e.onrender.com"
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-app.include_router(portfolio.router, prefix="/api/v1")
-app.include_router(technologies.router, prefix="/api/v1")
-app.include_router(blog.router, prefix="/api/v1")
+app.include_router(portfolio.router, prefix="/api/v1", tags=["Portfolio"])
+app.include_router(technologies.router, prefix="/api/v1", tags=["Technologies"])
+app.include_router(blog.router, prefix="/api/v1", tags=["Blog"])
 
-
-@app.get("/")
+@app.get("/", tags=["Healthcheck"])
 def root():
-    return {"message": "API do Portfólio Operacional. Acesse /docs para ver a documentação."}
+    return {"status": "online", "version": "1.0.0"}
