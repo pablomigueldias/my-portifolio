@@ -11,7 +11,8 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "http://localhost:5173",
-        "https://my-portifolio-754e.onrender.com"
+        "https://my-portifolio-754e.onrender.com",
+        "https://my-portifolio-sandy-one.vercel.app"
     ],
     allow_credentials=True,
     allow_methods=["*"],
