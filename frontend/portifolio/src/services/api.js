@@ -30,12 +30,12 @@ api.interceptors.request.use(config => {
 
 export const portfolioService = {
   getProjects: async () => {
-    const { data } = await api.get('/projects');
+    const { data } = await api.get('/projects/'); 
     return data;
   },
   
   getTechnologies: async () => {
-    const { data } = await api.get('/technologies');
+    const { data } = await api.get('/technologies/'); 
     return data;
   }
 };
@@ -43,12 +43,12 @@ export const portfolioService = {
 export const blogService = {
   getAllPosts: async (skip = 0, limit = 10) => {
     const params = new URLSearchParams({ skip, limit });
-    const { data } = await api.get(`/blog/?${params.toString()}`);
+    const { data } = await api.get(`/blog/?${params.toString()}`); 
     return data;
   },
 
   getPostBySlug: async (slug) => {
-    const { data } = await api.get(`/blog/${slug}`);
+    const { data } = await api.get(`/blog/${slug}/`); 
     return data;
   }
 };

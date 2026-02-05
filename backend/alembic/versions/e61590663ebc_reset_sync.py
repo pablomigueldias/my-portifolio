@@ -1,8 +1,8 @@
-"""add technology table and routes
+"""reset_sync
 
-Revision ID: 8cd6b7c02c86
-Revises: 53d17ef5852e
-Create Date: 2026-02-04 23:47:47.268838
+Revision ID: e61590663ebc
+Revises: 
+Create Date: 2026-02-05 00:57:45.443288
 
 """
 from typing import Sequence, Union
@@ -12,8 +12,8 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = '8cd6b7c02c86'
-down_revision: Union[str, Sequence[str], None] = '53d17ef5852e'
+revision: str = 'e61590663ebc'
+down_revision: Union[str, Sequence[str], None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 

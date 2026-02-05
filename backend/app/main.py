@@ -25,9 +25,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(portfolio.router, dependencies=[Depends(validate_admin)])
-app.include_router(technologies.router, dependencies=[Depends(validate_admin)])
-app.include_router(blog.router, dependencies=[Depends(validate_admin)])
+app.include_router(portfolio.router)
+app.include_router(technologies.router)
+app.include_router(blog.router)
 
 @app.get("/", tags=["Healthcheck"])
 def root():
