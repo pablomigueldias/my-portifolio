@@ -7,6 +7,7 @@ import axios from 'axios';
 import ProjectCard from '../ui/ProjectCard.jsx';
 import FilterButton from '../ui/FilterButton.jsx';
 import { FILTERS } from '../../data/projectsData.js';
+import { portfolioService } from '../../services/api.js';
 
 const Portfolio = () => {
     const [projects, setProjects] = useState([]);
@@ -14,24 +15,25 @@ const Portfolio = () => {
     const [error, setError] = useState(null);
     const [filter, setFilter] = useState('todos');
 
-    const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api/v1';
 
     useEffect(() => {
+        window.scrollTo(0, 0);
+
         const fetchProjects = async () => {
             try {
                 setIsLoading(true);
-                const response = await axios.get(`${API_URL}/projects`);
-                setProjects(response.data);
+                const data = await portfolioService.getProjects();
+                setProjects(data);
             } catch (err) {
-                console.error("Erro ao carregar projetos:", err);
-                setError("Falha ao carregar os projetos em destaque.");
+                console.error("Erro ao buscar projetos:", err);
+                setError("Não foi possível carregar os projetos.");
             } finally {
                 setIsLoading(false);
             }
         };
 
         fetchProjects();
-    }, [API_URL]);
+    }, []);
 
     const filteredProjects = filter === 'todos'
         ? projects

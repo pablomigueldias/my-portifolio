@@ -2,12 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { FaSearch, FaArrowRight, FaSpinner } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import axios from 'axios';
 
 import CompactProjectCard from '../components/ui/CompactProjectCard';
 import FilterButton from '../components/ui/FilterButton';
 import EmptyState from '../components/ui/EmptyState';
 import { FILTERS } from '../data/projectsData';
+import { portfolioService } from '../services/api.js';
 
 const AllProjects = () => {
 
@@ -18,26 +18,24 @@ const AllProjects = () => {
     const [filter, setFilter] = useState('todos');
     const [searchTerm, setSearchTerm] = useState('');
 
-    const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
-
     useEffect(() => {
         window.scrollTo(0, 0);
 
         const fetchProjects = async () => {
             try {
                 setIsLoading(true);
-                const response = await axios.get(`${API_URL}/projects/`);
-                setProjects(response.data);
+                const data = await portfolioService.getProjects();
+                setProjects(data);
             } catch (err) {
                 console.error("Erro ao buscar projetos:", err);
-                setError("Não foi possível carregar os projetos. Tente novamente mais tarde.");
+                setError("Não foi possível carregar os projetos.");
             } finally {
                 setIsLoading(false);
             }
         };
 
         fetchProjects();
-    }, [API_URL]);
+    }, []);
 
     const filteredProjects = projects.filter(project => {
         const dbCategoryNormalized = project.category.toLowerCase().replace(/\s+/g, '');
