@@ -18,7 +18,7 @@ const AllProjects = () => {
     const [filter, setFilter] = useState('todos');
     const [searchTerm, setSearchTerm] = useState('');
 
-    const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api/v1';
+    const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
     useEffect(() => {
         window.scrollTo(0, 0);
@@ -26,7 +26,7 @@ const AllProjects = () => {
         const fetchProjects = async () => {
             try {
                 setIsLoading(true);
-                const response = await axios.get(`${API_URL}/projects`);
+                const response = await axios.get(`${API_URL}/projects/`);
                 setProjects(response.data);
             } catch (err) {
                 console.error("Erro ao buscar projetos:", err);

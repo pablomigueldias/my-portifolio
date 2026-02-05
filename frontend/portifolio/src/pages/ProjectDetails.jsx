@@ -9,6 +9,7 @@ import { portfolioService } from '../services/api';
 import EmptyState from '../components/ui/EmptyState';
 import { TechStackWidget, ProjectActionsWidget, ChallengeCard } from '../components/ui/ProjectWidgets';
 import { fadeInUp, staggerContainer } from '../utils/animations';
+import { portfolioService } from '../services/api';
 
 const ProjectDetails = () => {
     const { id } = useParams();
@@ -17,33 +18,26 @@ const ProjectDetails = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
 
-    const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api/v1';
+    const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
-    useEffect(() => {
-        window.scrollTo(0, 0);
+   useEffect(() => {
+    window.scrollTo(0, 0);
 
-        const fetchProject = async () => {
-            try {
-                setIsLoading(true);
-                const data = await portfolioService.getProjects();
+    const fetchProjects = async () => {
+        try {
+            setIsLoading(true);
+            const data = await portfolioService.getProjects(); 
+            setProject(data);
+        } catch (err) {
+            console.error("Erro ao buscar projetos:", err);
+            setError("Não foi possível carregar os projetos.");
+        } finally {
+            setIsLoading(false);
+        }
+    };
 
-                const foundProject = data.find(p => p.id === parseInt(id));
-
-                if (!foundProject) {
-                    setError("Projeto não encontrado no banco de dados.");
-                } else {
-                    setProject(foundProject);
-                }
-            } catch (err) {
-                console.error("Erro ao buscar o projeto:", err);
-                setError(`Erro de conexão com o servidor. (Endpoint: ${API_URL})`);
-            } finally {
-                setIsLoading(false);
-            }
-        };
-
-        fetchProject();
-    }, [id, API_URL]);
+    fetchProjects();
+}, []);
 
     if (isLoading) {
         return (
