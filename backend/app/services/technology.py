@@ -1,6 +1,4 @@
-# backend/app/services/technology.py
 from sqlalchemy.orm import Session
-# Certifique-se de que o modelo está importado corretamente
 from app.models.portfolio import Technology
 from app.schemas.technology import TechnologyUpdate,TechnologyCreate
 

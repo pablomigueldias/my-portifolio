@@ -19,7 +19,6 @@ const MarkdownRenderer = ({ content }) => {
         ),
         a: ({ ...props }) => <a className="text-primary hover:text-primary/80 underline underline-offset-4 decoration-primary/30 break-all font-medium" target="_blank" rel="noopener noreferrer" {...props} />,
         
-        // NOVO: Estilização de Imagens no meio do texto
         img: ({ ...props }) => (
             <span className="flex flex-col items-center my-8">
                 <img className="max-w-full rounded-xl border border-border shadow-lg" loading="lazy" {...props} />
@@ -27,13 +26,11 @@ const MarkdownRenderer = ({ content }) => {
             </span>
         ),
 
-        // NOVO: Estilização de Tabelas (Muito usado em artigos de Data Science)
         table: ({ ...props }) => <div className="overflow-x-auto my-8"><table className="w-full text-sm text-left border-collapse" {...props} /></div>,
         thead: ({ ...props }) => <thead className="text-xs uppercase bg-muted/50 text-foreground" {...props} />,
         th: ({ ...props }) => <th className="px-6 py-3 border border-border font-bold text-primary" {...props} />,
         td: ({ ...props }) => <td className="px-6 py-4 border border-border text-muted-foreground" {...props} />,
 
-        // Lógica do Bloco de Código (Seu código original mantido)
         code({ inline, className, children, ...props }) {
             const match = /language-(\w+)/.exec(className || '')
             return !inline && match ? (

@@ -5,7 +5,7 @@ import { FaArrowRight, FaUserAstronaut, FaGraduationCap } from 'react-icons/fa';
 
 import SectionTitle from '../ui/SectionTitle.jsx';
 import StatCard from '../ui/StatCard.jsx';
-import { fadeInUp, staggerContainer } from '../../utils/animations'; // Mantendo seus imports
+import { fadeInUp, staggerContainer } from '../../utils/animations';
 import { PERSONAL_INFO, STATS } from '../../data/aboutData';
 
 const About = () => {
@@ -65,11 +65,7 @@ const About = () => {
                             </Link>
                         </motion.div>
                     </div>
-
-                    {/* COLUNA DA DIREITA: CARDS */}
-                    {/* Adicionado uma leve inclinação ou padding para não parecer "solto" */}
                     <div className="relative">
-                        {/* Decorativo de fundo para preencher espaço visual */}
                         <div className="absolute -top-10 -right-10 w-64 h-64 bg-primary/5 rounded-full blur-3xl -z-10" />
 
                         <div className="flex flex-col gap-6">
@@ -113,7 +109,6 @@ const About = () => {
                     </div>
                 </motion.div>
 
-                {/* STATS SECTION */}
                 <motion.div
                     variants={staggerContainer}
                     initial="hidden"

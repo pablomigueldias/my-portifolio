@@ -12,7 +12,8 @@ app.add_middleware(
     allow_origins=[
         "http://localhost:5173",
         "https://my-portifolio-754e.onrender.com",
-        "https://my-portifolio-sandy-one.vercel.app"
+        "https://my-portifolio-sandy-one.vercel.app",
+        "https://pabloortiz.dev"
     ],
     allow_credentials=True,
     allow_methods=["*"],

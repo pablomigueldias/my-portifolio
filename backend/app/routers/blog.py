@@ -22,11 +22,10 @@ def read_post_by_slug(slug: str, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Artigo não encontrado")
     return db_post
 
-from fastapi import HTTPException # Adicione no topo se ainda não tiver
+from fastapi import HTTPException
 
 @router.put("/{slug}", response_model=PostResponse)
 def update_post(slug: str, post_in: PostUpdate, db: Session = Depends(get_db)):
-    """Atualiza um post existente buscando pelo Slug"""
     updated_post = BlogService.update_post(db, slug, post_in)
     
     if not updated_post:
