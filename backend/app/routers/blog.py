@@ -21,7 +21,7 @@ def read_posts(skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
     return BlogService.get_all_posts(db, skip=skip, limit=limit)
 
 
-@router.get("/{slug}", response_model=PostResponse)
+@router.get("/{slug}/", response_model=PostResponse)
 def read_post_by_slug(slug: str, db: Session = Depends(get_db)):
     db_post = BlogService.get_post_by_slug(db, slug)
     if db_post is None:

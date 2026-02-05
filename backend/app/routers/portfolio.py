@@ -23,7 +23,7 @@ def get_projects(db: Session = Depends(get_db)):
     service = PortfolioService(db)
     return service.list_projects()
 
-@router.patch("/{project_id}", response_model=ProjectRead, dependencies=[Depends(validate_admin)])
+@router.patch("/{project_id}/", response_model=ProjectRead, dependencies=[Depends(validate_admin)])
 def update_project(project_id: int, project_in: ProjectUpdate, db: Session = Depends(get_db)):
     service = PortfolioService(db)
     return service.update_project(project_id, project_in)
