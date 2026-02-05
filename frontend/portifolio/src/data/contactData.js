@@ -6,8 +6,8 @@ export const CONTACT_INFO = [
         icon: FaEnvelope,
         title: "Email",
         description: "Para assuntos profissionais e parcerias.",
-        value: "pablo@dev.com",
-        link: "mailto:pablo@dev.com",
+        value: "contato@pabloortiz.dev",
+        link: "mailto:contato@pabloortiz.dev",
         isText: false
     },
     {
@@ -15,8 +15,8 @@ export const CONTACT_INFO = [
         icon: FaWhatsapp,
         title: "WhatsApp",
         description: "Para mensagens rápidas.",
-        value: "+55 (11) 99999-9999",
-        link: "https://wa.me/5511999999999",
+        value: "+55 (11) 92066-9859",
+        link: "https://wa.me/5511920669859",
         isText: false
     },
     {

@@ -91,7 +91,6 @@ const AllProjects = () => {
                 <div className="flex flex-col items-center justify-center py-20 text-muted-foreground">
                     <FaSpinner className="animate-spin text-4xl text-primary mb-4" />
                     <p>Carregando projetos do servidor...</p>
-                    <p className="text-xs mt-2 opacity-50">Conectando em: {API_URL}</p>
                 </div>
             )}
 

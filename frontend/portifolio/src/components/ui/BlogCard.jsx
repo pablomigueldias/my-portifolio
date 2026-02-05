@@ -5,7 +5,7 @@ import { FaCalendar, FaUser, FaArrowRight, FaTag, FaClock } from 'react-icons/fa
 import { fadeInUp } from '../../utils/animations';
 
 const BlogCard = ({ post }) => {
- 
+
     if (!post) return null;
 
     return (
@@ -18,7 +18,7 @@ const BlogCard = ({ post }) => {
             whileHover={{ y: -5 }}
             className="group flex flex-col bg-card border border-border rounded-2xl overflow-hidden hover:border-primary/50 transition-all duration-300 shadow-sm hover:shadow-xl hover:shadow-primary/5 h-full"
         >
-            <Link to={`/blog/${post.slug}`}className="h-48 md:h-52 overflow-hidden relative block cursor-pointer shrink-0">
+            <Link to={`/blog/${post.slug}`} className="h-48 md:h-52 overflow-hidden relative block cursor-pointer shrink-0">
                 <img
                     src={post.image}
                     alt={post.title}
@@ -56,7 +56,7 @@ const BlogCard = ({ post }) => {
                         {post.author}
                     </div>
 
-                    <Link to={`/blog/${post.id}`} className="text-primary text-sm font-bold flex items-center gap-2 group/link">
+                    <Link to={`/blog/${post.slug}`} className="text-primary text-sm font-bold flex items-center gap-2 group/link">
                         Ler Artigo
                         <FaArrowRight className="transform group-hover/link:translate-x-1 transition-transform" />
                     </Link>

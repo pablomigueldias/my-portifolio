@@ -2,7 +2,7 @@
 from sqlalchemy.orm import Session
 # Certifique-se de que o modelo está importado corretamente
 from app.models.portfolio import Technology
-from app.schemas.technology import TechnologyUpdate
+from app.schemas.technology import TechnologyUpdate,TechnologyCreate
 
 
 class TechnologyService:
@@ -24,6 +24,14 @@ class TechnologyService:
         for field, value in update_data.items():
             setattr(db_tech, field, value)
 
+        self.db.commit()
+        self.db.refresh(db_tech)
+        return db_tech
+    
+    def create_technology(self, tech_in: TechnologyCreate):
+        db_tech = Technology(**tech_in.model_dump())
+        
+        self.db.add(db_tech)
         self.db.commit()
         self.db.refresh(db_tech)
         return db_tech

@@ -1,10 +1,10 @@
 import { SiPython, SiReact, SiFastapi, SiGit, SiDocker } from 'react-icons/si';
 
 export const TYPEWRITER_WORDS = [
+    'Soluções Agnósticas a Stack',
     'Sistemas Escaláveis',
-    'Interfaces Modernas',
-    'APIs Robustas',
-    'Full Stack Solutions'
+    'APIs de Alta Performance',
+    'Aplicações Full Stack'
 ];
 
 export const TECH_STACK = [

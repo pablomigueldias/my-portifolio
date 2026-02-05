@@ -1,14 +1,20 @@
 export const SKILLS_DATA = {
   frontend: [
-    { name: "React.js", level: 90 },
-    { name: "JavaScript (ES6+)", level: 85 },
+    { name: "React & Next.js", level: 95 },
+    { name: "JavaScript (ES6+) / TypeScript", level: 90 },
     { name: "Tailwind CSS", level: 95 },
-    { name: "HTML5 & Semantic CSS", level: 100 },
+    { name: "Consumo de APIs REST", level: 90 },
   ],
   backend: [
-    { name: "Python", level: 90 },
-    { name: "FastAPI", level: 85 },
-    { name: "SQL / Database", level: 80 },
-    { name: "Docker & Linux", level: 75 },
+    { name: "Python (FastAPI / Flask)", level: 95 },
+    { name: "Integração de LLMs (OpenAI / LangChain)", level: 85 },
+    { name: "SQL & NoSQL (Postgres / MongoDB)", level: 90 },
+    { name: "Node.js (Express)", level: 75 },
+  ],
+  infrastructure: [
+    { name: "Gestão de Servidores (WHM / cPanel)", level: 90 },
+    { name: "Docker & CI/CD (Vercel / Render)", level: 85 },
+    { name: "Administração Zoho One", level: 80 },
+    { name: "Linux & Automação de Processos", level: 85 },
   ]
 };

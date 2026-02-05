@@ -38,6 +38,11 @@ const Skills = () => {
             skills={SKILLS_DATA.backend} 
             delay={0.4} 
           />
+          <SkillCategory 
+            title="Infraestrutura" 
+            skills={SKILLS_DATA.infrastructure} 
+            delay={0.4} 
+          />
         </div>
 
       </div>

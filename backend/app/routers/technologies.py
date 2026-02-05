@@ -1,15 +1,22 @@
 # backend/app/routers/technologies.py
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException,status
 from sqlalchemy.orm import Session
 from typing import List
 
 from app.db.database import SessionLocal
-from app.services.technology import TechnologyService  # Criaremos este a seguir
-from app.schemas.technology import TechnologyRead, TechnologyUpdate
+from app.services.technology import TechnologyService
+from app.schemas.technology import TechnologyRead, TechnologyUpdate,TechnologyCreate
 from app.routers.portfolio import get_db
 
 
 router = APIRouter(prefix="/technologies", tags=["Technologies"])
+
+@router.post("/", response_model=TechnologyRead, status_code=status.HTTP_201_CREATED, summary="Cadastrar uma nova tecnologia")
+def create_technology(tech_in: TechnologyCreate, db: Session = Depends(get_db)):
+   
+    service = TechnologyService(db)
+    new_tech = service.create_technology(tech_in)
+    return new_tech
 
 
 @router.patch("/{tech_id}", response_model=TechnologyRead, summary="Atualizar uma tecnologia")

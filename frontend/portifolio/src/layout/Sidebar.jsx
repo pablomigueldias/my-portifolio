@@ -6,6 +6,9 @@ import {
     FaGithub, FaLinkedin, FaLayerGroup, FaMoon, FaSun, FaBars, FaTimes
 } from 'react-icons/fa';
 
+import perfil from '/perfil.png'
+
+
 const NAV_ITEMS = [
     { to: "/", icon: FaHome, label: "Home", exact: true },
     { to: "/templates", icon: FaLayerGroup, label: "Templates" },
@@ -16,8 +19,8 @@ const NAV_ITEMS = [
 ];
 
 const SOCIAL_LINKS = [
-    { href: "https://github.com/seu-user", icon: FaGithub },
-    { href: "https://linkedin.com/in/seu-user", icon: FaLinkedin },
+    { href: "https://github.com/pablomigueldias", icon: FaGithub },
+    { href: "https://www.linkedin.com/in/pablo-miguel-dias-ortiz/", icon: FaLinkedin },
 ];
 
 const Sidebar = () => {
@@ -71,7 +74,7 @@ const Sidebar = () => {
                     className="relative inline-block mb-6"
                 >
                     <img
-                        src="https://github.com/github.png"
+                        src={perfil}
                         alt="Profile"
                         className="w-32 h-32 rounded-full border-4 border-muted mx-auto transition-all duration-500 hover:border-primary"
                     />
