@@ -29,7 +29,7 @@ def read_post_by_slug(slug: str, db: Session = Depends(get_db)):
     return db_post
 
 
-@router.put("/{slug}", response_model=PostResponse, dependencies=[Depends(validate_admin)])
+@router.get("/{slug}/", response_model=PostResponse)
 def update_post(slug: str, post_in: PostUpdate, db: Session = Depends(get_db)):
     updated_post = BlogService.update_post(db, slug, post_in)
 
