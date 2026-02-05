@@ -8,8 +8,10 @@ app = FastAPI(
     description="API Atomic e Profissional para o Portfólio",
     docs_url="/admin-docs",
     redoc_url=None,
-    version="1.0.0"
+    version="1.0.0",
+    redirect_slashes=False 
 )
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
