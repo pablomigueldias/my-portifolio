@@ -14,7 +14,7 @@ export const api = axios.create({
 });
 
 api.interceptors.request.use(config => {
-  const token = import.meta.env.ADMIN_API_KEY;
+  const token = import.meta.env.VITE_ADMIN_API_KEY;
   
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
