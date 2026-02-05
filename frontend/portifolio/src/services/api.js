@@ -2,7 +2,6 @@ import axios from 'axios';
 
 const getBaseURL = () => {
   const envUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000';
-
   return envUrl.endsWith('/api/v1') ? envUrl : `${envUrl}/api/v1`;
 };
 
@@ -14,12 +13,21 @@ export const api = axios.create({
   }
 });
 
-if (import.meta.env.DEV) {
-  api.interceptors.request.use(request => {
-    console.log('🚀 Request to:', request.baseURL + request.url);
-    return request;
-  });
-}
+api.interceptors.request.use(config => {
+  const token = import.meta.env.ADMIN_API_KEY;
+  
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  
+  if (import.meta.env.DEV) {
+    console.log('🚀 Request to:', config.baseURL + config.url);
+  }
+  
+  return config;
+}, error => {
+  return Promise.reject(error);
+});
 
 export const portfolioService = {
   getProjects: async () => {
