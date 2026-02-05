@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FaArrowRight, FaLayerGroup, FaSpinner } from 'react-icons/fa';
-import axios from 'axios';
 
 import ProjectCard from '../ui/ProjectCard.jsx';
 import FilterButton from '../ui/FilterButton.jsx';

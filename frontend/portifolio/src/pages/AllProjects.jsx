@@ -18,9 +18,9 @@ const AllProjects = () => {
     const [filter, setFilter] = useState('todos');
     const [searchTerm, setSearchTerm] = useState('');
 
+
     useEffect(() => {
         window.scrollTo(0, 0);
-
         const fetchProjects = async () => {
             try {
                 setIsLoading(true);

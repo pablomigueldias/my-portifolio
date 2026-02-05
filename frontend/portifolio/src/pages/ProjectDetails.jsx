@@ -3,13 +3,10 @@ import { useParams, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { FaArrowLeft, FaTools, FaSpinner } from 'react-icons/fa';
 
-// IMPORTAMOS O SERVIÇO EM VEZ DO AXIOS DIRETAMENTE
-import { portfolioService } from '../services/api';
-
 import EmptyState from '../components/ui/EmptyState';
 import { TechStackWidget, ProjectActionsWidget, ChallengeCard } from '../components/ui/ProjectWidgets';
 import { fadeInUp, staggerContainer } from '../utils/animations';
-import { portfolioService } from '../services/api';
+import { portfolioService } from '../services/api.js';
 
 const ProjectDetails = () => {
     const { id } = useParams();
@@ -18,23 +15,30 @@ const ProjectDetails = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
 
-    const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
    useEffect(() => {
     window.scrollTo(0, 0);
 
     const fetchProjects = async () => {
-        try {
-            setIsLoading(true);
-            const data = await portfolioService.getProjects(); 
-            setProject(data);
-        } catch (err) {
-            console.error("Erro ao buscar projetos:", err);
-            setError("Não foi possível carregar os projetos.");
-        } finally {
-            setIsLoading(false);
+    try {
+        setIsLoading(true);
+        const data = await portfolioService.getProjects(); 
+        
+        const foundProject = data.find(p => p.id === parseInt(id));
+
+        if (!foundProject) {
+            setError("Projeto não encontrado.");
+        } else {
+            setProject(foundProject);
         }
-    };
+        
+    } catch (err) {
+        console.error("Erro ao buscar projetos:", err);
+        setError("Não foi possível carregar os projetos.");
+    } finally {
+        setIsLoading(false);
+    }
+};
 
     fetchProjects();
 }, []);
