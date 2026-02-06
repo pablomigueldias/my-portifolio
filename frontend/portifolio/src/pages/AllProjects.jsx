@@ -95,7 +95,7 @@ const AllProjects = () => {
             {error && !isLoading && (
                 <EmptyState
                     title="Erro de Conexão"
-                    message={`${error} (Tentando em: ${API_URL})`}
+                    message={`${error} (Tentando em: ${VITE_API_URL})`}
                     actionLabel="Tentar Novamente"
                     onAction={() => window.location.reload()}
                 />

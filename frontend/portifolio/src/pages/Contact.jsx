@@ -1,23 +1,40 @@
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FaPaperPlane, FaCheckCircle, FaSpinner } from 'react-icons/fa';
+import { FaPaperPlane, FaCheckCircle, FaSpinner, FaExclamationCircle } from 'react-icons/fa';
 
 import { ContactCard, FormInput, FormTextArea } from '../components/ui/ContactComponents';
 import SectionTitle from '../components/ui/SectionTitle';
 import { CONTACT_INFO } from '../data/contactData';
 
+import { contactService } from '../services/api';
+
 const Contact = () => {
     const { register, handleSubmit, formState: { errors, isSubmitting }, reset } = useForm();
     const [success, setSuccess] = useState(false);
+    
+    const [submitError, setSubmitError] = useState(null);
 
     const onSubmit = async (data) => {
-        await new Promise(resolve => setTimeout(resolve, 2000));
-        console.log("Dados do formulário:", data);
+        setSubmitError(null);
+        
+        try {
+            await contactService.sendMessage(data);
 
-        setSuccess(true);
-        reset();
-        setTimeout(() => setSuccess(false), 5000);
+            setSuccess(true);
+            reset();
+            
+            setTimeout(() => setSuccess(false), 5000);
+            
+        } catch (error) {
+            console.error("Erro no envio:", error);
+            
+            if (error.response && error.response.status === 429) {
+                setSubmitError("Muitas tentativas. Por favor, aguarde um minuto antes de enviar novamente.");
+            } else {
+                setSubmitError("Houve um erro ao enviar sua mensagem. Tente novamente mais tarde.");
+            }
+        }
     };
 
     return (
@@ -93,12 +110,23 @@ const Contact = () => {
                                         rules={{ required: "A mensagem não pode estar vazia" }}
                                     />
 
+                                    {submitError && (
+                                        <motion.div 
+                                            initial={{ opacity: 0, y: -10 }}
+                                            animate={{ opacity: 1, y: 0 }}
+                                            className="p-3 bg-red-500/10 border border-red-500/20 rounded-lg flex items-center gap-2 text-red-600 text-sm font-medium"
+                                        >
+                                            <FaExclamationCircle />
+                                            {submitError}
+                                        </motion.div>
+                                    )}
+
                                     <motion.button
                                         whileHover={{ scale: 1.02 }}
                                         whileTap={{ scale: 0.98 }}
                                         disabled={isSubmitting}
                                         type="submit"
-                                        className="w-full bg-primary hover:bg-primary/90 disabled:bg-primary/50 text-primary-foreground font-bold py-4 rounded-xl transition-all shadow-lg shadow-primary/20 flex items-center justify-center gap-2"
+                                        className="w-full bg-primary hover:bg-primary/90 disabled:bg-primary/50 disabled:cursor-not-allowed text-primary-foreground font-bold py-4 rounded-xl transition-all shadow-lg shadow-primary/20 flex items-center justify-center gap-2"
                                     >
                                         {isSubmitting ? (
                                             <><FaSpinner className="animate-spin" /> Enviando...</>
