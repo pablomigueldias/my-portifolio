@@ -77,22 +77,24 @@ class PortfolioService:
         return self.db.query(Project).all()
 
     def update_project(self, project_id: int, project_in: ProjectUpdate):
-        db_project = self.db.query(Project).filter(Project.id == project_id).first()
+
+        db_project = self.db.query(Project).filter(
+            Project.id == project_id).first()
 
         if not db_project:
             return None
-        
+
         update_data = project_in.model_dump(exclude_unset=True)
 
         if "technology_ids" in update_data:
             tech_ids = update_data.pop("technology_ids")
 
-        if tech_ids:
-            techs = self.db.query(Technology).filter(
-                Technology.id.in_(tech_ids)
-            ).all()
-            
-            db_project.technologies = techs
+            if tech_ids:
+                techs = self.db.query(Technology).filter(
+                    Technology.id.in_(tech_ids)
+                ).all()
+
+                db_project.technologies = techs
         else:
             db_project.technologies = []
 
