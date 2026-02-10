@@ -36,6 +36,7 @@ class ProjectRead(ProjectBase, TimestampMixin):
     technologies: List[TechnologyRead] = []
     challenges: List[ChallengeRead] = []
 
+
 class ProjectUpdate(SchemaBase):
     title: Optional[str] = Field(None, min_length=3, max_length=100)
     category: Optional[str] = Field(None, max_length=50)
@@ -44,3 +45,4 @@ class ProjectUpdate(SchemaBase):
     deploy_link: Optional[str] = None
     short_description: Optional[str] = Field(None, max_length=300)
     long_description: Optional[str] = None
+    technologies: Optional[List[str]] = None
