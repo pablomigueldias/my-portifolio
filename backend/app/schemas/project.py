@@ -45,4 +45,4 @@ class ProjectUpdate(SchemaBase):
     deploy_link: Optional[str] = None
     short_description: Optional[str] = Field(None, max_length=300)
     long_description: Optional[str] = None
-    technologies: Optional[List[str]] = None
+    technology_ids: List[int] = []
