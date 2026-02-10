@@ -1,6 +1,6 @@
 from pydantic import BaseModel, Field, ConfigDict
 from datetime import datetime
-from typing import Optional
+from typing import Optional,List
 
 class PostBase(BaseModel):
     title: str = Field(..., min_length=5, max_length=200)
@@ -31,3 +31,4 @@ class PostUpdate(BaseModel):
     read_time: Optional[str] = None
     image_url: Optional[str] = None
     published: Optional[bool] = None
+    technologies: Optional[List[str]] = None
