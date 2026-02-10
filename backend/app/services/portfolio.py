@@ -95,8 +95,8 @@ class PortfolioService:
                 ).all()
 
                 db_project.technologies = techs
-        else:
-            db_project.technologies = []
+            else:
+                db_project.technologies = []
 
         for field, value in update_data.items():
             setattr(db_project, field, value)
