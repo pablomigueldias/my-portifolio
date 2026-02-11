@@ -1,6 +1,16 @@
-from pydantic import BaseModel, Field, ConfigDict
+from pydantic import BaseModel, Field, ConfigDict, field_validator
 from datetime import datetime
-from typing import Optional,List
+from typing import Optional, List
+
+
+class AIRequest(BaseModel):
+    notes: str
+
+    @field_validator('notes')
+    @classmethod
+    def sanitize_control_chars(cls, v: str) -> str:
+        return "".join(ch for ch in v if ch >= " " or ch in "\n\r")
+
 
 class PostBase(BaseModel):
     title: str = Field(..., min_length=5, max_length=200)
@@ -11,9 +21,12 @@ class PostBase(BaseModel):
     read_time: str = "5 min"
     image_url: Optional[str] = None
     published: bool = False
+    published_at: Optional[datetime] = None
+
 
 class PostCreate(PostBase):
     pass
+
 
 class PostResponse(PostBase):
     id: int
@@ -21,6 +34,7 @@ class PostResponse(PostBase):
     create_at: datetime
 
     model_config = ConfigDict(from_attributes=True)
+
 
 class PostUpdate(BaseModel):
     title: Optional[str] = None
@@ -32,3 +46,4 @@ class PostUpdate(BaseModel):
     image_url: Optional[str] = None
     published: Optional[bool] = None
     technologies: Optional[List[str]] = None
+    published_at: Optional[datetime] = None

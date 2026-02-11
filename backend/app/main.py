@@ -46,3 +46,10 @@ app.include_router(contact.router)
 @app.get("/", tags=["Healthcheck"])
 def root():
     return {"status": "online"}
+
+
+if __name__ == "__main__":
+    import uvicorn
+    # Cria as tabelas se não existirem
+    Base.metadata.create_all(bind=engine) 
+    uvicorn.run(app, host="0.0.0.0", port=8000)

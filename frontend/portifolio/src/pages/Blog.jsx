@@ -47,11 +47,14 @@ const Blog = () => {
     }, [posts]);
 
     const filteredPosts = posts.filter(post => {
-        const matchesSearch = post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            post.excerpt.toLowerCase().includes(searchQuery.toLowerCase());
-        const matchesCategory = selectedCategory === "Todas" || post.category === selectedCategory;
-        return matchesSearch && matchesCategory;
-    });
+    const matchesSearch = post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        post.excerpt.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesCategory = selectedCategory === "Todas" || post.category === selectedCategory;
+
+    const isPublished = post.published === true;
+    
+    return matchesSearch && matchesCategory && isPublished; 
+});
 
     const recentPosts = posts.slice(0, 3);
 

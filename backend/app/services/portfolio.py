@@ -109,3 +109,13 @@ class PortfolioService:
         except Exception as e:
             self.db.rollback()
             raise e
+
+    def delete_project(self, project_id: int) -> bool:
+        project = self.db.query(Project).filter(
+            Project.id == project_id).first()
+        if not project:
+            return False
+
+        self.db.delete(project)
+        self.db.commit()
+        return True

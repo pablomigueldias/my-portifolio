@@ -1,21 +1,30 @@
 import React from 'react'
 import { Routes, Route } from 'react-router-dom'
+
+// Layout e Seções
 import Sidebar from './layout/Sidebar'
 import Hero from './components/sections/Hero.jsx'
 import About from './components/sections/About.jsx'
 import Skills from './components/sections/Skills.jsx'
 import Portfolio from './components/sections/Portfolio.jsx'
+import Footer from './pages/Footer'
+import ScrollToTop from './components/functional/ScrollToTop.jsx'
+
+// Páginas Públicas
 import ProjectDetails from './pages/ProjectDetails'
 import TemplatesGallery from './pages/TemplatesGallery'
 import AllProjects from './pages/AllProjects'
 import Blog from './pages/Blog'
 import BlogPost from './pages/BlogPost'
 import Contact from './pages/Contact'
-import Footer from './pages/Footer'
-import ScrollToTop from './components/functional/ScrollToTop.jsx'
+
+import { AuthProvider } from './context/AuthContext.jsx';
+import ProtectedRoute from './pages/admin/ProtectedRoute.jsx';
+import Login from './pages/admin/Login';
+import Dashboard from './pages/admin/Dashboard.jsx';
+import PostEditor from './pages/admin/PostEditor';
 
 const Home = () => (
-
   <div className="w-full overflow-x-hidden">
     <Hero />
     <About />
@@ -26,32 +35,51 @@ const Home = () => (
 
 function App() {
   return (
+    <AuthProvider>
+      <div className="flex min-h-screen bg-background text-foreground font-sans selection:bg-primary selection:text-white transition-colors duration-300 overflow-x-hidden">
 
-    <div className="flex min-h-screen bg-background text-foreground font-sans selection:bg-primary selection:text-white transition-colors duration-300 overflow-x-hidden">
+        <ScrollToTop />
+        <Sidebar />
 
-      <ScrollToTop />
+        <main className="flex-1 ml-0 lg:ml-72 p-6 md:p-12 lg:p-20 min-h-screen flex flex-col transition-all duration-300 overflow-x-hidden w-full relative">
+          <div className="max-w-6xl mx-auto w-full flex-1">
 
-      <Sidebar />
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/projects" element={<AllProjects />} />
+              <Route path="/projeto/:id" element={<ProjectDetails />} />
+              <Route path="/blog" element={<Blog />} />
+              <Route path="/blog/:slug" element={<BlogPost />} />
+              <Route path="/templates" element={<TemplatesGallery />} />
+              <Route path="/contact" element={<Contact />} />
 
-      <main className="flex-1 ml-0 lg:ml-72 p-6 md:p-12 lg:p-20 min-h-screen flex flex-col transition-all duration-300 overflow-x-hidden w-full relative">
-        <div className="max-w-6xl mx-auto w-full flex-1">
+              <Route path="/login" element={<Login />} />
 
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/projects" element={<AllProjects />} />
-            <Route path="/projeto/:id" element={<ProjectDetails />} />
-            <Route path="/blog" element={<Blog />} />
-            <Route path="/blog/:slug" element={<BlogPost />} />
-            <Route path="/templates" element={<TemplatesGallery />} />
-            <Route path="/contact" element={<Contact />} />
-          </Routes>
+              <Route path="/admin" element={
+                <ProtectedRoute>
+                  <Dashboard />
+                </ProtectedRoute>
+              } />
 
-        </div>
+              <Route path="/admin/new" element={
+                <ProtectedRoute>
+                  <PostEditor />
+                </ProtectedRoute>
+              } />
 
-        <Footer />
+              <Route path="/admin/edit/:slug" element={
+                <ProtectedRoute>
+                  <PostEditor />
+                </ProtectedRoute>
+              } />
+            </Routes>
 
-      </main>
-    </div>
+          </div>
+
+          <Footer />
+        </main>
+      </div>
+    </AuthProvider>
   )
 }
 

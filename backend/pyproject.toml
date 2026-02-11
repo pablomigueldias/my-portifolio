@@ -1,9 +1,9 @@
 [project]
 name = "portfolioapi"
 version = "0.1.0"
-description = ""
+description = "Backend do Portfólio Profissional Pablo Ortiz"
 authors = [
-    {name = "pablomigueldias",email = "pablo.miguel.dias@gmail.com"}
+    {name = "pablomigueldias", email = "pablo.miguel.dias@gmail.com"}
 ]
 requires-python = ">=3.12,<4.0"
 dependencies = [
@@ -18,9 +18,13 @@ dependencies = [
     "httpx (>=0.28.1,<0.29.0)",
     "cloudinary (>=1.44.1,<2.0.0)",
     "python-slugify (>=8.0.4,<9.0.0)",
-    "slowapi (>=0.1.9,<0.2.0)"
+    "slowapi (>=0.1.9,<0.2.0)",
+    "python-multipart (>=0.0.22,<0.0.23)",
+    "google-genai (>=1.62.0,<2.0.0)"
 ]
 
+[tool.poetry]
+package-mode = false 
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
