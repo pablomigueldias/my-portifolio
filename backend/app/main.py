@@ -4,7 +4,7 @@ from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 from app.core.limiter import limiter
 
-from app.routers import portfolio, technologies, blog, contact
+from app.routers import portfolio, technologies, blog, contact, auth
 from app.db.database import engine
 from app.models.base import Base
 from app.models import portfolio as models_portfolio
@@ -31,7 +31,7 @@ app.add_middleware(
         "https://my-portifolio-sandy-one.vercel.app",
         "https://pabloortiz.dev",
         "https://www.pabloortiz.dev"
-        ],
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -41,6 +41,7 @@ app.include_router(portfolio.router)
 app.include_router(technologies.router)
 app.include_router(blog.router)
 app.include_router(contact.router)
+app.include_router(auth.router)
 
 
 @app.get("/", tags=["Healthcheck"])
@@ -50,6 +51,5 @@ def root():
 
 if __name__ == "__main__":
     import uvicorn
-    # Cria as tabelas se não existirem
-    Base.metadata.create_all(bind=engine) 
+    Base.metadata.create_all(bind=engine)
     uvicorn.run(app, host="0.0.0.0", port=8000)
