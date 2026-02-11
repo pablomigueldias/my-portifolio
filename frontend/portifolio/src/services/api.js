@@ -114,9 +114,24 @@ export const blogService = {
   },
 };
 
+export const authService = {
+  /**
+   *
+   * @param {string} username 
+   * @param {string} password 
+   */
+
+  login: async (username, password) => {
+    const { data } = await api.post('/auth/login', { username, password });
+    return data;
+  },
+};
+
 export const contactService = {
   sendMessage: async (data) => {
     const { data: response } = await api.post('/contact/', data);
     return response;
   },
 };
+
+
