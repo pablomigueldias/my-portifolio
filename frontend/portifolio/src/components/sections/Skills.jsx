@@ -9,39 +9,39 @@ import { fadeInUp } from '../../utils/animations';
 const Skills = () => {
   return (
     <section id="skills" className="py-20 border-b border-border bg-background transition-colors duration-300">
-      
+
       <div className="max-w-6xl mx-auto px-4">
-        
+
         <div className="mb-12">
-           <SectionTitle subtitle="Minhas Ferramentas" title="Skills Técnicas" />
-           
-           <motion.p 
-             variants={fadeInUp}
-             initial="hidden"
-             whileInView="visible"
-             viewport={{ once: true }}
-             className="text-muted-foreground -mt-8 md:-mt-10 max-w-2xl text-lg"
-           >
+          <SectionTitle subtitle="Minhas Ferramentas" title="Skills Técnicas" />
+
+          <motion.p
+            variants={fadeInUp}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            className="text-muted-foreground -mt-8 md:-mt-10 max-w-2xl text-lg"
+          >
             Um overview das tecnologias que utilizo diariamente para construir aplicações completas.
             Foco em código limpo e arquitetura escalável.
           </motion.p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-16">
-          <SkillCategory 
-            title="Frontend Development" 
-            skills={SKILLS_DATA.frontend} 
-            delay={0.2} 
+          <SkillCategory
+            title="Frontend Development"
+            skills={SKILLS_DATA.frontend}
+            delay={0.2}
           />
-          <SkillCategory 
-            title="Backend & DevOps" 
-            skills={SKILLS_DATA.backend} 
-            delay={0.4} 
+          <SkillCategory
+            title="Backend & DevOps"
+            skills={SKILLS_DATA.backend}
+            delay={0.4}
           />
-          <SkillCategory 
-            title="Infraestrutura" 
-            skills={SKILLS_DATA.infrastructure} 
-            delay={0.4} 
+          <SkillCategory
+            title="Infraestrutura"
+            skills={SKILLS_DATA.infrastructure}
+            delay={0.4}
           />
         </div>
 

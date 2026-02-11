@@ -1,12 +1,15 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Typewriter } from 'react-simple-typewriter';
 import { motion } from 'framer-motion';
-import { FaDownload, FaArrowRight, FaCode, FaTools } from 'react-icons/fa';
+import { FaDownload, FaArrowRight, FaCode, FaTools, FaSpinner } from 'react-icons/fa';
 
 import StatusBadge from '../ui/StatusBadge';
+import TechIcon from '../ui/TechIcon';
 import { staggerContainer, fadeInUp } from '../../utils/animations';
-import { TECH_STACK, TYPEWRITER_WORDS } from '../../data/heroData';
+import { portfolioService } from '../../services/api';
+import { TYPEWRITER_WORDS } from '../../data/heroData';
+
 
 const OTHER_TECHS = [
     "Next.js", "Docker", "PostgreSQL", "MongoDB",
@@ -14,6 +17,47 @@ const OTHER_TECHS = [
 ];
 
 const Hero = () => {
+    const [heroTechs, setHeroTechs] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
+
+    const HERO_WANTED_LIST = [
+        "Python",
+        "React",
+        "Tailwind css",
+        "Fastapi",
+        "Next.js",
+        "TypeScript",
+        "Postgresql",
+        "Docker",
+        "MongoDB",
+        "Javascript",
+        "Poetry",
+        "Node.js"
+    ];
+
+
+    useEffect(() => {
+        const loadTechs = async () => {
+            try {
+                const data = await portfolioService.getTechnologies();
+
+                const vipTechs = data.filter(tech =>
+                    HERO_WANTED_LIST.includes(tech.name)
+                );
+                vipTechs.sort((a, b) => {
+                    return HERO_WANTED_LIST.indexOf(a.name) - HERO_WANTED_LIST.indexOf(b.name);
+                });
+                setHeroTechs(vipTechs);
+            } catch (error) {
+                console.error("Erro ao carregar techs do Hero:", error);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        loadTechs();
+    }, []);
+
     const handleDownloadCV = () => {
         const link = document.createElement('a');
         link.href = '/Pablo Miguel Dias Otiz - Full Stack.pdf';
@@ -32,6 +76,7 @@ const Hero = () => {
                 animate="visible"
                 className="w-full max-w-7xl grid grid-cols-1 lg:grid-cols-2 gap-12 items-center"
             >
+                {/* LADO ESQUERDO: Texto e CTA */}
                 <div className="flex flex-col justify-center items-start">
                     <StatusBadge variants={fadeInUp} />
 
@@ -85,10 +130,12 @@ const Hero = () => {
                     </motion.div>
                 </div>
 
+                {/* LADO DIREITO: Cards Dinâmicos */}
                 <motion.div
                     variants={fadeInUp}
                     className="flex flex-col gap-6 w-full max-w-lg mx-auto lg:mr-0"
                 >
+                    {/* CARD 1: Stack Principal (DINÂMICO) */}
                     <div className="bg-card/30 backdrop-blur-sm border border-border/50 p-6 rounded-2xl shadow-sm">
                         <div className="flex items-center gap-3 mb-6">
                             <div className="p-2 bg-primary/10 rounded-lg text-primary">
@@ -97,24 +144,33 @@ const Hero = () => {
                             <h3 className="font-bold text-lg text-foreground">Stack Principal</h3>
                         </div>
 
-                        <div className="grid grid-cols-3 sm:grid-cols-4 gap-6">
-                            {TECH_STACK.map((tech, index) => (
-                                <motion.div
-                                    key={index}
-                                    whileHover={{ y: -5, scale: 1.1 }}
-                                    className={`flex flex-col items-center gap-2 group cursor-default transition-colors duration-300 ${tech.color}`}
-                                >
-                                    <div className="text-4xl drop-shadow-sm">
-                                        <tech.icon />
-                                    </div>
-                                    <span className="text-[10px] font-mono font-medium text-muted-foreground group-hover:text-foreground transition-colors uppercase tracking-tighter">
-                                        {tech.name}
-                                    </span>
-                                </motion.div>
-                            ))}
-                        </div>
+                        {isLoading ? (
+                            <div className="flex justify-center py-4 text-primary"><FaSpinner className="animate-spin" /></div>
+                        ) : (
+                            <div className="grid grid-cols-3 sm:grid-cols-4 gap-6">
+                                {heroTechs.length > 0 ? (
+                                    heroTechs.map((tech) => (
+                                        <motion.div
+                                            key={tech.id}
+                                            whileHover={{ y: -5, scale: 1.1 }}
+                                            className={`flex flex-col items-center gap-2 group cursor-default transition-colors duration-300`}
+                                        >
+                                            <div className={`text-4xl drop-shadow-sm ${tech.color_class || 'text-foreground'}`}>
+                                                <TechIcon iconName={tech.icon_key} />
+                                            </div>
+                                            <span className="text-[10px] font-mono font-medium text-muted-foreground group-hover:text-foreground transition-colors uppercase tracking-tighter text-center">
+                                                {tech.name}
+                                            </span>
+                                        </motion.div>
+                                    ))
+                                ) : (
+                                    <p className="col-span-4 text-xs text-muted-foreground text-center">Nenhuma stack definida.</p>
+                                )}
+                            </div>
+                        )}
                     </div>
 
+                    {/* CARD 2: Ecosystem (ESTÁTICO - Opcional, pode manter assim para contraste) */}
                     <div className="bg-muted/20 backdrop-blur-sm border border-border/50 p-6 rounded-2xl shadow-sm">
                         <div className="flex items-center gap-3 mb-4">
                             <div className="p-2 bg-secondary/20 rounded-lg text-foreground">

@@ -7,7 +7,7 @@ import {
 import { blogService, portfolioService } from '../../services/api';
 
 const Dashboard = () => {
-    const [activeTab, setActiveTab] = useState('posts'); // 'posts' | 'projects'
+    const [activeTab, setActiveTab] = useState('posts');
     const [data, setData] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
@@ -57,14 +57,19 @@ const Dashboard = () => {
 
     return (
         <div className="space-y-8 pb-10">
-            {/* HEADER */}
             <div className="flex flex-col md:flex-row justify-between items-center gap-4">
                 <div>
                     <h1 className="text-3xl font-black text-foreground">Painel de Controle</h1>
                     <p className="text-muted-foreground text-sm">Gerencie todo o conteúdo do seu portfólio.</p>
                 </div>
 
-                {/* BOTÕES DE NOVO CONTEÚDO */}
+                <Link
+                    to="/admin/technologies"
+                    className="flex items-center gap-2 bg-primary text-primary-foreground px-5 py-2.5 rounded-xl font-bold text-sm hover:brightness-110 shadow-lg active:scale-95 transition-all"
+                >
+                    Gerenciar Techs
+                </Link>
+
                 <Link
                     to={activeTab === 'posts' ? "/admin/new" : "/admin/project/new"}
                     className="flex items-center gap-2 bg-primary text-primary-foreground px-5 py-2.5 rounded-xl font-bold text-sm hover:brightness-110 shadow-lg active:scale-95 transition-all"
@@ -73,7 +78,6 @@ const Dashboard = () => {
                 </Link>
             </div>
 
-            {/* NAVEGAÇÃO POR ABAS */}
             <div className="flex gap-4 border-b border-border pb-1">
                 <TabButton
                     active={activeTab === 'posts'}
@@ -89,9 +93,7 @@ const Dashboard = () => {
                 />
             </div>
 
-            {/* LISTAGEM */}
             <div className="bg-card border border-border rounded-3xl shadow-sm overflow-hidden min-h-[400px]">
-                {/* Search Bar */}
                 <div className="p-6 border-b border-border bg-muted/30">
                     <div className="relative max-w-md">
                         <FaSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-xs" />
@@ -112,7 +114,6 @@ const Dashboard = () => {
                         {filteredData.map(item => (
                             <div key={item.id} className="p-4 hover:bg-muted/50 transition-colors flex items-center justify-between group">
                                 <div className="flex items-center gap-4">
-                                    {/* Imagem (Se for projeto) */}
                                     {activeTab === 'projects' && item.image_url && (
                                         <img src={item.image_url} alt="" className="w-12 h-12 rounded-lg object-cover border border-border" />
                                     )}
@@ -158,13 +159,12 @@ const Dashboard = () => {
     );
 };
 
-// Componente de Aba
 const TabButton = ({ active, onClick, icon, label }) => (
     <button
         onClick={onClick}
         className={`flex items-center gap-2 px-6 py-3 text-sm font-bold border-b-2 transition-all ${active
-                ? 'border-primary text-primary'
-                : 'border-transparent text-muted-foreground hover:text-foreground'
+            ? 'border-primary text-primary'
+            : 'border-transparent text-muted-foreground hover:text-foreground'
             }`}
     >
         {icon} {label}

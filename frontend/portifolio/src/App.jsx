@@ -18,11 +18,16 @@ import Blog from './pages/Blog'
 import BlogPost from './pages/BlogPost'
 import Contact from './pages/Contact'
 
+// Contexto e Auth
 import { AuthProvider } from './context/AuthContext.jsx';
 import ProtectedRoute from './pages/admin/ProtectedRoute.jsx';
 import Login from './pages/admin/Login';
+
+// Área Administrativa (CMS)
 import Dashboard from './pages/admin/Dashboard.jsx';
 import PostEditor from './pages/admin/PostEditor';
+import ProjectEditor from './pages/admin/ProjectEditor';
+import TechnologyManager from './pages/admin/TechnologyManager';
 
 const Home = () => (
   <div className="w-full overflow-x-hidden">
@@ -72,6 +77,25 @@ function App() {
                   <PostEditor />
                 </ProtectedRoute>
               } />
+
+              <Route path="/admin/project/new" element={
+                <ProtectedRoute>
+                  <ProjectEditor />
+                </ProtectedRoute>
+              } />
+
+              <Route path="/admin/project/edit/:id" element={
+                <ProtectedRoute>
+                  <ProjectEditor />
+                </ProtectedRoute>
+              } />
+
+              <Route path="/admin/technologies" element={
+                <ProtectedRoute>
+                  <TechnologyManager />
+                </ProtectedRoute>
+              } />
+
             </Routes>
 
           </div>

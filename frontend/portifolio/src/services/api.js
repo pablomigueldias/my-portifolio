@@ -39,10 +39,39 @@ export const portfolioService = {
     const { data } = await api.get('/projects/');
     return data;
   },
+
+  getProjectById: async (id) => {
+    const { data } = await api.get(`/projects/${id}`);
+    return data;
+  },
+  createProject: async (projectData) => {
+    const { data } = await api.post('/projects/', projectData);
+    return data;
+  },
+  updateProject: async (id, projectData) => {
+    const { data } = await api.patch(`/projects/${id}/`, projectData);
+    return data;
+  },
+  deleteProject: async (id) => {
+    await api.delete(`/projects/${id}/`);
+  },
+
   getTechnologies: async () => {
     const { data } = await api.get('/technologies/');
     return data;
   },
+  createTechnology: async (data) => {
+    const { data: res } = await api.post('/technologies/', data);
+    return res;
+  },
+  updateTechnology: async (id, data) => {
+    const { data: res } = await api.patch(`/technologies/${id}/`, data);
+    return res;
+  },
+
+  deleteTechnology: async (id) => {
+    await api.delete(`/technologies/${id}/`);
+  }
 };
 
 export const blogService = {
