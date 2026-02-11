@@ -10,7 +10,7 @@ const TechnologyManager = () => {
 
     const [formData, setFormData] = useState({
         name: '',
-        icon_key: '', // Ex: 'FaReact' ou URL SVG
+        icon_key: '',
         color_class: 'bg-blue-500/10 text-blue-500'
     });
 

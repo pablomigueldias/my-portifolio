@@ -46,7 +46,7 @@ def validate_admin(credentials: HTTPAuthorizationCredentials = Depends(security)
 
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        username: str = payload.get("sub")
+        username: str = payload.get("sub") #type: ignore
         if username is None:
             raise credentials_exception
 
