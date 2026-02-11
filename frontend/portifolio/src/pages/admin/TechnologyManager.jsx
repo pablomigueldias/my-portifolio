@@ -1,19 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { FaPlus, FaTrash, FaEdit, FaSave, FaTimes, FaCode } from 'react-icons/fa';
 import { portfolioService } from '../../services/api';
-// Dica: Para ícones dinâmicos, futuramente podemos usar uma lib, 
-// por enquanto vamos usar texto/classes ou Simple Icons
+
 
 const TechnologyManager = () => {
     const [techs, setTechs] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
-    const [isEditing, setIsEditing] = useState(null); // ID da tech em edição
+    const [isEditing, setIsEditing] = useState(null); 
 
-    // Estado do Formulário (Criação/Edição)
     const [formData, setFormData] = useState({
         name: '',
         icon_key: '', // Ex: 'FaReact' ou URL SVG
-        color_class: 'bg-blue-500/10 text-blue-500' // Default Tailwind class
+        color_class: 'bg-blue-500/10 text-blue-500'
     });
 
     useEffect(() => {
@@ -39,7 +37,6 @@ const TechnologyManager = () => {
             } else {
                 await portfolioService.createTechnology(formData);
             }
-            // Reset
             setFormData({ name: '', icon_key: '', color_class: 'bg-blue-500/10 text-blue-500' });
             setIsEditing(null);
             loadTechs();

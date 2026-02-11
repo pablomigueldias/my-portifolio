@@ -50,7 +50,6 @@ const ProjectActionsWidget = ({ githubLink, deployLink }) => (
         )}
     </div>
 );
-// -----------------------------------------------------------------------------------
 
 const fadeInUp = {
     hidden: { opacity: 0, y: 20 },
@@ -74,25 +73,17 @@ const ProjectDetails = () => {
         const fetchProjects = async () => {
             try {
                 setIsLoading(true);
-
-                // Tenta buscar o projeto específico (melhor performance se a API suportar)
                 try {
                     const specificData = await portfolioService.getProjectById(id);
                     if (specificData) {
                         setProject(specificData);
-                        return; // Se achou direto, para aqui
+                        return;
                     }
                 } catch (e) {
-                    // Se a API getProjectById falhar ou não existir, continua para o fallback
-                    // console.log("Fallback para lista completa...");
                 }
 
-                // FALLBACK DE SEGURANÇA (Para projetos antigos)
-                // Busca tudo e filtra na mão
                 const data = await portfolioService.getProjects();
 
-                // AQUI ESTÁ A MÁGICA DA COMPATIBILIDADE:
-                // Compara como String para aceitar tanto ID numérico (antigo) quanto Slug (novo)
                 const foundProject = data.find(p =>
                     String(p.id) === String(id) || p.slug === id
                 );
@@ -133,7 +124,6 @@ const ProjectDetails = () => {
         );
     }
 
-    // Garante que não quebra se o campo não existir no banco antigo
     const challenges = project.challenges || [];
     const description = project.long_description || project.short_description || "Sem descrição disponível.";
     const techs = project.technologies || [];
@@ -145,14 +135,12 @@ const ProjectDetails = () => {
             variants={staggerContainer}
             className="min-h-screen pb-20 pt-24 transition-colors duration-300"
         >
-            {/* Header de Navegação */}
             <div className="max-w-6xl mx-auto px-6 mb-8">
                 <Link to="/" className="flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors w-fit group text-sm font-bold uppercase tracking-wide">
                     <FaArrowLeft className="group-hover:-translate-x-1 transition-transform" /> Voltar
                 </Link>
             </div>
 
-            {/* Banner Principal */}
             <div className="max-w-6xl mx-auto px-6">
                 <motion.div
                     variants={fadeInUp}
@@ -176,10 +164,8 @@ const ProjectDetails = () => {
                 </motion.div>
             </div>
 
-            {/* Conteúdo */}
             <div className="max-w-6xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-3 gap-12">
 
-                {/* Coluna da Esquerda (Texto) */}
                 <div className="lg:col-span-2 space-y-12">
                     <motion.section variants={fadeInUp}>
                         <h2 className="text-2xl font-bold mb-6 text-foreground flex items-center gap-2">

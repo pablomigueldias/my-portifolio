@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { blogService } from '../../services/api';
-import { FaSpinner } from 'react-icons/fa'; // Assumindo que você tem react-icons
+import { FaSpinner } from 'react-icons/fa';
 
 import EditorHeader from './components/EditorHeader.jsx';
 import NotesSidebar from './components/NotesSidebar.jsx';
@@ -13,7 +13,7 @@ const PostEditor = () => {
     const navigate = useNavigate();
     const [notes, setNotes] = useState('');
     const [isGenerating, setIsGenerating] = useState(false);
-    const [isLoading, setIsLoading] = useState(false); // Estado de loading inicial
+    const [isLoading, setIsLoading] = useState(false);
     const [viewMode, setViewMode] = useState('editor');
 
     const [formData, setFormData] = useState({
@@ -36,7 +36,6 @@ const PostEditor = () => {
         }
     }, [slug]);
 
-    // Handlers (Mantidos idênticos à lógica de negócio)
     const handleFileGenerate = async (file) => {
         if (!file) return;
         setIsGenerating(true);
@@ -92,7 +91,7 @@ const PostEditor = () => {
 
     return (
         <div className="min-h-screen flex flex-col bg-background pb-10">
-            {/* 1. HEADER GLOBAL (Fora do Grid) */}
+
             <div className="sticky top-0 z-50 bg-background/80 backdrop-blur-md border-b border-border">
                 <div className="max-w-[1800px] mx-auto px-6">
                     <EditorHeader
@@ -104,11 +103,9 @@ const PostEditor = () => {
                 </div>
             </div>
 
-            {/* 2. LAYOUT CMS (3 Colunas) */}
             <main className="flex-1 max-w-[1800px] mx-auto w-full px-6 py-8">
                 <div className="grid grid-cols-12 gap-8 items-start">
 
-                    {/* ESQUERDA: Ferramentas de IA (Sticky) */}
                     <aside className="hidden xl:block col-span-3 sticky top-24 h-[calc(100vh-8rem)] overflow-y-auto pr-2 custom-scrollbar">
                         <div className="space-y-2">
                             <h3 className="text-xs font-black uppercase tracking-widest text-muted-foreground mb-4">
@@ -124,9 +121,8 @@ const PostEditor = () => {
                         </div>
                     </aside>
 
-                    {/* CENTRO: Área de Escrita (Foco Principal) */}
                     <section className="col-span-12 xl:col-span-6 flex flex-col gap-6 min-h-[80vh]">
-                        {/* Wrapper para dar destaque ao editor */}
+
                         <div className={`relative flex-1 bg-card rounded-2xl border border-border shadow-sm transition-all duration-300 ${viewMode === 'editor' ? 'ring-1 ring-primary/10' : ''}`}>
                             <ContentWorkspace
                                 formData={formData}
@@ -136,7 +132,6 @@ const PostEditor = () => {
                         </div>
                     </section>
 
-                    {/* DIREITA: Metadados e Configs (Sticky) */}
                     <aside className="col-span-12 xl:col-span-3 xl:sticky xl:top-24 space-y-6">
                         <div className="xl:h-[calc(100vh-8rem)] overflow-y-auto pl-2 custom-scrollbar">
                             <h3 className="text-xs font-black uppercase tracking-widest text-muted-foreground mb-4">

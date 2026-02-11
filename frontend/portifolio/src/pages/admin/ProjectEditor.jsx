@@ -8,7 +8,6 @@ const ProjectEditor = () => {
     const navigate = useNavigate();
     const [isLoading, setIsLoading] = useState(false);
 
-    // Lista de todas as tecnologias disponíveis para escolha
     const [availableTechs, setAvailableTechs] = useState([]);
 
     const [formData, setFormData] = useState({
@@ -19,7 +18,7 @@ const ProjectEditor = () => {
         image_url: '',
         github_link: '',
         deploy_link: '',
-        technology_ids: [] // Array de IDs (Integers)
+        technology_ids: []
     });
 
     useEffect(() => {
@@ -29,14 +28,11 @@ const ProjectEditor = () => {
     const loadData = async () => {
         setIsLoading(true);
         try {
-            // 1. Carrega as tecnologias disponíveis (para o select)
             const techs = await portfolioService.getTechnologies();
             setAvailableTechs(techs);
 
-            // 2. Se for edição, carrega o projeto
             if (id) {
                 const project = await portfolioService.getProjectById(id);
-                // Mapeia o objeto technology para apenas IDs
                 const techIds = project.technologies ? project.technologies.map(t => t.id) : [];
 
                 setFormData({
@@ -51,7 +47,6 @@ const ProjectEditor = () => {
         }
     };
 
-    // Handler para alternar seleção de tecnologia
     const toggleTech = (techId) => {
         setFormData(prev => {
             const exists = prev.technology_ids.includes(techId);
@@ -100,7 +95,6 @@ const ProjectEditor = () => {
             <main className="max-w-5xl mx-auto px-6 py-8">
                 <form className="grid grid-cols-1 md:grid-cols-12 gap-8">
 
-                    {/* ESQUERDA */}
                     <div className="md:col-span-8 space-y-6">
                         <div className="bg-card border border-border p-6 rounded-2xl space-y-4">
                             <div>
@@ -130,7 +124,6 @@ const ProjectEditor = () => {
                                 </div>
                             </div>
 
-                            {/* --- SELETOR DE TECNOLOGIAS (NOVO) --- */}
                             <div>
                                 <label className="text-xs font-bold uppercase text-muted-foreground ml-1 mb-2 block">Stack Tecnológica</label>
                                 {availableTechs.length === 0 ? (
@@ -157,7 +150,6 @@ const ProjectEditor = () => {
                                     </div>
                                 )}
                             </div>
-                            {/* ------------------------------------- */}
 
                             <div>
                                 <label className="text-xs font-bold uppercase text-muted-foreground ml-1">Descrição Curta</label>
@@ -179,7 +171,6 @@ const ProjectEditor = () => {
                         </div>
                     </div>
 
-                    {/* DIREITA (Links e Mídia) - Mantido igual */}
                     <div className="md:col-span-4 space-y-6">
                         <div className="bg-card border border-border p-6 rounded-2xl space-y-4">
                             <h3 className="font-bold flex items-center gap-2"><FaExternalLinkAlt className="text-primary" /> Links</h3>
