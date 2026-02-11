@@ -14,7 +14,6 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24  # 24 horas
 security = HTTPBearer()
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-# --- Funções Utilitárias ---
 
 
 def verify_password(plain_password, hashed_password):

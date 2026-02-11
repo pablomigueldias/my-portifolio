@@ -13,7 +13,7 @@ class LoginSchema(BaseModel):
 @router.post("/auth/login")
 def login(credentials: LoginSchema):
 
-    admin_user = os.getenv("ADMIN_USER", "admin") 
+    admin_user = os.getenv("ADMIN_USER") 
     
     admin_hash = os.getenv("ADMIN_PASSWORD_HASH")
 
