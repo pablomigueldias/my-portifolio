@@ -96,7 +96,7 @@ const PostEditor = () => {
         };
 
         delete payload.id;
-        delete payload.created_at;
+        delete payload.create_at;
         delete payload.updated_at;
 
         const savePromise = slug
