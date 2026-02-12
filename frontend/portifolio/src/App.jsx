@@ -56,8 +56,8 @@ function App() {
               <Route path="/blog/:slug" element={<BlogPost />} />
               <Route path="/templates" element={<TemplatesGallery />} />
               <Route path="/contact" element={<Contact />} />
-
               <Route path="/login" element={<Login />} />
+
 
               <Route path="/admin" element={
                 <ProtectedRoute>
@@ -71,7 +71,7 @@ function App() {
                 </ProtectedRoute>
               } />
 
-              <Route path="/admin/edit/:slug" element={
+              <Route path="/admin/post/:slug" element={
                 <ProtectedRoute>
                   <PostEditor />
                 </ProtectedRoute>
@@ -83,7 +83,7 @@ function App() {
                 </ProtectedRoute>
               } />
 
-              <Route path="/admin/project/edit/:id" element={
+              <Route path="/admin/project/:id" element={
                 <ProtectedRoute>
                   <ProjectEditor />
                 </ProtectedRoute>

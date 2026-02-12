@@ -13,8 +13,6 @@ from app.core.security import validate_admin
 
 router = APIRouter(prefix="/blog", tags=["Blog"])
 
-# --- ROTA PÚBLICA (Listagem) ---
-
 
 @router.get("/", response_model=List[PostResponse], summary="Listar posts publicados")
 def list_public_posts(
@@ -30,8 +28,6 @@ def list_public_posts(
         .all()
     return posts
 
-# --- ROTA PÚBLICA (Ler Post Único) ---
-
 
 @router.get("/{slug}/", response_model=PostResponse, summary="Ler post completo")
 def read_post_by_slug(slug: str, db: Session = Depends(get_db)):
@@ -40,17 +36,10 @@ def read_post_by_slug(slug: str, db: Session = Depends(get_db)):
     if db_post is None:
         raise HTTPException(status_code=404, detail="Artigo não encontrado")
 
-    # Se não for admin (implícito aqui pela falta de token), não vê rascunho
-    # Nota: Em um sistema real, checaríamos o user aqui.
     if not db_post.published:
-        # Se quiser permitir o admin ver via API direta, precisaria injetar dependência de user
         pass
 
     return db_post
-
-# --- ROTAS PROTEGIDAS (ADMIN) ---
-
-# UPDATE
 
 
 @router.put("/{slug}/", response_model=PostResponse, dependencies=[Depends(validate_admin)])
@@ -60,8 +49,6 @@ def update_post(slug: str, post_in: PostUpdate, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Não encontrado.")
     return updated_post
 
-# DELETE (NOVA ROTA)
-
 
 @router.delete("/{slug}/", status_code=status.HTTP_204_NO_CONTENT, dependencies=[Depends(validate_admin)])
 def delete_post(slug: str, db: Session = Depends(get_db)):
@@ -69,9 +56,7 @@ def delete_post(slug: str, db: Session = Depends(get_db)):
     if not success:
         raise HTTPException(
             status_code=404, detail="Artigo não encontrado ou já excluído.")
-    return None  # 204 não retorna corpo
-
-# IA GENERATION
+    return None 
 
 
 @router.post("/generate", dependencies=[Depends(validate_admin)])

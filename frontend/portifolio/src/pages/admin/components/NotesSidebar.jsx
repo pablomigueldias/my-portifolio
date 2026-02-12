@@ -1,72 +1,68 @@
-import { FaMagic, FaSpinner, FaFileUpload, FaTrashAlt } from 'react-icons/fa';
+import React, { useRef } from 'react';
+import { FaFileUpload, FaStickyNote } from 'react-icons/fa';
 
 const NotesSidebar = ({ notes, setNotes, onGenerate, onFileUpload, isLoading }) => {
+    const fileInputRef = useRef(null);
 
-    // Handler para capturar o arquivo arrastado do Obsidian
-    const handleDrop = (e) => {
-        e.preventDefault();
-        const file = e.dataTransfer.files[0];
-        if (file && file.name.endsWith('.md')) {
-            onFileUpload(file);
-        }
+    const handleFileChange = (e) => {
+        const file = e.target.files[0];
+        if (file) onFileUpload(file);
     };
 
     return (
-        <aside className="col-span-12 lg:col-span-3 flex flex-col gap-6 h-full">
-            <div className="flex items-center justify-between">
-                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground flex items-center gap-2">
-                    <FaMagic className="text-primary animate-pulse" /> Brain Dump
-                </span>
-                {notes && (
-                    <button onClick={() => setNotes('')} className="text-muted-foreground hover:text-destructive transition-colors">
-                        <FaTrashAlt size={12} />
-                    </button>
-                )}
+        <div className="space-y-6">
+
+            <div
+                className="bg-card border-2 border-dashed border-border hover:border-primary/50 transition-colors rounded-xl p-6 text-center cursor-pointer group relative overflow-hidden"
+                onClick={() => fileInputRef.current.click()}
+            >
+                <input
+                    type="file"
+                    ref={fileInputRef}
+                    onChange={handleFileChange}
+                    accept=".md,.txt"
+                    className="hidden"
+                />
+
+                <div className="flex flex-col items-center justify-center gap-3 relative z-10">
+                    <div className="p-3 bg-secondary rounded-full group-hover:scale-110 transition-transform text-primary">
+                        <FaFileUpload size={20} />
+                    </div>
+
+                    <div className="space-y-1">
+                        <p className="text-sm font-bold text-foreground">
+                            Upload de Arquivo
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                            Arraste seu .md ou clique aqui
+                        </p>
+                    </div>
+                </div>
+
+                <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity" />
             </div>
 
-            {/* Área de Drop/Input Blindada */}
-            <div
-                onDragOver={(e) => e.preventDefault()}
-                onDrop={handleDrop}
-                className="group relative flex-1 flex flex-col gap-2"
-            >
+            <div className="bg-card border border-border rounded-xl p-4 shadow-sm flex flex-col gap-3">
+                <div className="flex items-center gap-2 text-xs font-bold text-muted-foreground uppercase tracking-wider">
+                    <FaStickyNote /> Notas Rápidas
+                </div>
+
                 <textarea
                     value={notes}
                     onChange={(e) => setNotes(e.target.value)}
-                    placeholder="Cole notas ou arraste seu .md aqui..."
-                    className="flex-1 w-full p-5 bg-card/50 backdrop-blur-sm border border-border rounded-3xl resize-none focus:ring-4 ring-primary/5 outline-none font-mono text-sm leading-relaxed transition-all scrollbar-hide hover:border-primary/30"
+                    placeholder="Cole ideias soltas, rascunhos ou tópicos aqui para a IA processar..."
+                    className="w-full h-48 bg-secondary/30 border border-border/50 rounded-lg p-3 text-sm resize-none focus:outline-none focus:ring-1 focus:ring-primary/50 custom-scrollbar"
                 />
 
-                {/* Overlay de Upload Visual */}
-                {!notes && (
-                    <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none text-muted-foreground/40 opacity-100 group-hover:text-primary/40 transition-colors">
-                        <FaFileUpload size={32} className="mb-2" />
-                        <p className="text-[10px] font-medium">DROP YOUR MARKDOWN</p>
-                    </div>
-                )}
+                <button
+                    onClick={onGenerate}
+                    disabled={isLoading || !notes.trim()}
+                    className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-bold py-3 rounded-lg text-sm shadow-lg shadow-primary/20 transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                >
+                    {isLoading ? "Gerando..." : "✨ Gerar Artigo com IA"}
+                </button>
             </div>
-
-            <button
-                onClick={onGenerate}
-                disabled={isLoading || (!notes.trim() && !isLoading)}
-                className={`w-full py-5 rounded-3xl font-black text-xs tracking-widest transition-all flex items-center justify-center gap-3 shadow-lg active:scale-95 ${isLoading
-                        ? "bg-muted text-muted-foreground cursor-wait"
-                        : "bg-primary text-primary-foreground hover:shadow-primary/20 hover:-translate-y-1"
-                    }`}
-            >
-                {isLoading ? (
-                    <FaSpinner className="animate-spin text-lg" />
-                ) : (
-                    <>
-                        <FaMagic /> GERAR ARTIGO
-                    </>
-                )}
-            </button>
-
-            <p className="text-[9px] text-center text-muted-foreground/60 leading-tight px-4">
-                A IA usará o modelo <b>Gemini 2.5 Flash</b> para estruturar seu pensamento.
-            </p>
-        </aside>
+        </div>
     );
 };
 

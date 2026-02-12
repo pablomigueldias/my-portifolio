@@ -1,17 +1,35 @@
 import React, { useState, useEffect } from 'react';
-import { FaPlus, FaTrash, FaEdit, FaSave, FaTimes, FaCode } from 'react-icons/fa';
+import { useNavigate } from 'react-router-dom';
+import { toast, Toaster } from 'react-hot-toast';
+import {
+    FaPlus, FaTrash, FaEdit, FaSave, FaTimes,
+    FaCode, FaArrowLeft, FaPalette, FaCube
+} from 'react-icons/fa';
 import { portfolioService } from '../../services/api';
 
+// Presets para agilizar seu trabalho (Tailwind Classes)
+const COLOR_PRESETS = [
+    { name: 'Blue', value: 'bg-blue-500/10 text-blue-500 border border-blue-500/20' },
+    { name: 'Green', value: 'bg-emerald-500/10 text-emerald-500 border border-emerald-500/20' },
+    { name: 'Purple', value: 'bg-purple-500/10 text-purple-500 border border-purple-500/20' },
+    { name: 'Orange', value: 'bg-orange-500/10 text-orange-500 border border-orange-500/20' },
+    { name: 'Pink', value: 'bg-pink-500/10 text-pink-500 border border-pink-500/20' },
+    { name: 'Yellow', value: 'bg-yellow-500/10 text-yellow-500 border border-yellow-500/20' },
+    { name: 'Cyan', value: 'bg-cyan-500/10 text-cyan-500 border border-cyan-500/20' },
+    { name: 'Gray', value: 'bg-zinc-500/10 text-zinc-500 border border-zinc-500/20' },
+];
 
 const TechnologyManager = () => {
+    const navigate = useNavigate();
     const [techs, setTechs] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
-    const [isEditing, setIsEditing] = useState(null); 
+    const [isSaving, setIsSaving] = useState(false);
+    const [isEditing, setIsEditing] = useState(null);
 
     const [formData, setFormData] = useState({
         name: '',
         icon_key: '',
-        color_class: 'bg-blue-500/10 text-blue-500'
+        color_class: 'bg-zinc-500/10 text-zinc-500 border border-zinc-500/20'
     });
 
     useEffect(() => {
@@ -24,6 +42,7 @@ const TechnologyManager = () => {
             setTechs(data);
         } catch (error) {
             console.error(error);
+            toast.error("Erro ao carregar tecnologias.");
         } finally {
             setIsLoading(false);
         }
@@ -31,17 +50,31 @@ const TechnologyManager = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        if (!formData.name) {
+            toast.error("O nome é obrigatório.");
+            return;
+        }
+
+        setIsSaving(true);
+        const actionPromise = isEditing
+            ? portfolioService.updateTechnology(isEditing, formData)
+            : portfolioService.createTechnology(formData);
+
+        toast.promise(actionPromise, {
+            loading: isEditing ? 'Atualizando...' : 'Criando...',
+            success: isEditing ? 'Tech atualizada!' : 'Tech criada!',
+            error: 'Erro ao salvar.'
+        });
+
         try {
-            if (isEditing) {
-                await portfolioService.updateTechnology(isEditing, formData);
-            } else {
-                await portfolioService.createTechnology(formData);
-            }
-            setFormData({ name: '', icon_key: '', color_class: 'bg-blue-500/10 text-blue-500' });
-            setIsEditing(null);
+            await actionPromise;
+            resetForm();
             loadTechs();
         } catch (error) {
-            alert("Erro ao salvar tecnologia.");
+            console.error(error);
+        } finally {
+            setIsSaving(false);
         }
     };
 
@@ -52,128 +85,209 @@ const TechnologyManager = () => {
             icon_key: tech.icon_key,
             color_class: tech.color_class
         });
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
     const handleDelete = async (id) => {
-        if (window.confirm("Tem certeza? Isso pode afetar projetos que usam essa tech.")) {
-            try {
-                await portfolioService.deleteTechnology(id);
-                setTechs(techs.filter(t => t.id !== id));
-            } catch (error) {
-                alert("Erro ao deletar.");
-            }
+        if (!window.confirm("Tem certeza? Projetos que usam essa tech perderão essa referência.")) return;
+
+        try {
+            await portfolioService.deleteTechnology(id);
+            setTechs(prev => prev.filter(t => t.id !== id));
+            toast.success("Tecnologia removida.");
+        } catch (error) {
+            toast.error("Erro ao deletar.");
         }
     };
 
+    const resetForm = () => {
+        setFormData({ name: '', icon_key: '', color_class: COLOR_PRESETS[7].value });
+        setIsEditing(null);
+    };
+
     return (
-        <div className="space-y-8 pb-20">
-            <header className="flex justify-between items-center">
-                <div>
-                    <h1 className="text-3xl font-black">Tecnologias</h1>
-                    <p className="text-muted-foreground text-sm">Gerencie as stacks do seu portfólio.</p>
+        <div className="min-h-screen bg-background pb-20">
+            <Toaster position="top-right" />
+
+            {/* HEADER */}
+            <header className="sticky top-0 z-30 bg-background/80 backdrop-blur-md border-b border-border px-6 py-4 flex justify-between items-center shadow-sm">
+                <div className="flex items-center gap-4">
+                    <button
+                        onClick={() => navigate('/admin')}
+                        className="p-2 text-muted-foreground hover:bg-muted hover:text-foreground rounded-full transition-colors"
+                        title="Voltar ao Dashboard"
+                    >
+                        <FaArrowLeft />
+                    </button>
+                    <div>
+                        <h1 className="text-xl font-bold tracking-tight">Gerenciar Stacks</h1>
+                        <p className="text-xs text-muted-foreground hidden md:block">
+                            Adicione ou edite as tecnologias exibidas no portfólio.
+                        </p>
+                    </div>
                 </div>
             </header>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                
-                <div className="lg:col-span-1">
-                    <div className="bg-card border border-border p-6 rounded-2xl sticky top-6">
-                        <h2 className="font-bold mb-4 flex items-center gap-2">
-                            {isEditing ? <FaEdit className="text-primary"/> : <FaPlus className="text-primary"/>}
-                            {isEditing ? 'Editar Tecnologia' : 'Nova Tecnologia'}
-                        </h2>
-                        
-                        <form onSubmit={handleSubmit} className="space-y-4">
-                            <div>
-                                <label className="text-xs font-bold uppercase text-muted-foreground">Nome</label>
-                                <input 
-                                    value={formData.name}
-                                    onChange={e => setFormData({...formData, name: e.target.value})}
-                                    className="w-full bg-background border border-border rounded-xl p-3 outline-none focus:border-primary"
-                                    placeholder="Ex: React"
-                                    required
-                                />
-                            </div>
-                            
-                            <div>
-                                <label className="text-xs font-bold uppercase text-muted-foreground">Chave do Ícone</label>
-                                <input 
-                                    value={formData.icon_key}
-                                    onChange={e => setFormData({...formData, icon_key: e.target.value})}
-                                    className="w-full bg-background border border-border rounded-xl p-3 outline-none focus:border-primary"
-                                    placeholder="Ex: SiReact (Simple Icons)"
-                                />
-                                <p className="text-[10px] text-muted-foreground mt-1">
-                                    Usaremos para mapear o ícone no frontend público.
-                                </p>
-                            </div>
+            <main className="max-w-7xl mx-auto px-4 md:px-6 py-8">
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
 
-                            <div>
-                                <label className="text-xs font-bold uppercase text-muted-foreground">Classes de Cor (Tailwind)</label>
-                                <input 
-                                    value={formData.color_class}
-                                    onChange={e => setFormData({...formData, color_class: e.target.value})}
-                                    className="w-full bg-background border border-border rounded-xl p-3 outline-none focus:border-primary font-mono text-xs"
-                                    placeholder="bg-blue-500/10 text-blue-500"
-                                />
-
-                                <div className={`mt-2 px-3 py-1 rounded text-xs font-bold w-fit ${formData.color_class}`}>
-                                    Preview: {formData.name || 'Tech'}
-                                </div>
-                            </div>
-
-                            <div className="flex gap-2 pt-2">
-                                <button type="submit" className="flex-1 bg-primary text-primary-foreground py-2 rounded-xl font-bold hover:brightness-110">
-                                    <FaSave className="inline mr-2"/> Salvar
-                                </button>
+                    {/* FORMULÁRIO (Coluna Esquerda - Sticky) */}
+                    <div className="lg:col-span-4 lg:sticky lg:top-24">
+                        <div className="bg-card border border-border p-6 rounded-3xl shadow-sm">
+                            <div className="flex items-center justify-between mb-6">
+                                <h2 className="font-bold flex items-center gap-2 text-lg">
+                                    {isEditing ? <FaEdit className="text-primary" /> : <FaPlus className="text-primary" />}
+                                    {isEditing ? 'Editar Tecnologia' : 'Nova Tecnologia'}
+                                </h2>
                                 {isEditing && (
-                                    <button 
-                                        type="button" 
-                                        onClick={() => { setIsEditing(null); setFormData({name: '', icon_key: '', color_class: ''}); }}
-                                        className="bg-muted text-muted-foreground px-4 rounded-xl hover:text-red-500"
-                                    >
-                                        <FaTimes />
+                                    <button onClick={resetForm} className="text-xs text-muted-foreground hover:text-red-500 flex items-center gap-1">
+                                        <FaTimes /> Cancelar
                                     </button>
                                 )}
                             </div>
-                        </form>
-                    </div>
-                </div>
 
-                <div className="lg:col-span-2">
-                    {isLoading ? (
-                        <p className="text-center text-muted-foreground">Carregando...</p>
-                    ) : (
-                        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                            {techs.map(tech => (
-                                <div key={tech.id} className="group bg-card border border-border p-4 rounded-2xl flex flex-col items-center justify-center text-center gap-3 relative hover:border-primary/50 transition-all">
-                                    
-                                    <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                                        <button onClick={() => handleEdit(tech)} className="p-1.5 bg-background border border-border rounded-lg text-muted-foreground hover:text-primary">
-                                            <FaEdit size={12}/>
-                                        </button>
-                                        <button onClick={() => handleDelete(tech.id)} className="p-1.5 bg-background border border-border rounded-lg text-muted-foreground hover:text-red-500">
-                                            <FaTrash size={12}/>
-                                        </button>
-                                    </div>
-
-                                    <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-2xl mb-1 ${tech.color_class}`}>
-                                        <FaCode />
-                                    </div>
-                                    
-                                    <div>
-                                        <h3 className="font-bold text-sm">{tech.name}</h3>
-                                        <code className="text-[10px] text-muted-foreground bg-muted px-1.5 py-0.5 rounded">
-                                            {tech.icon_key}
-                                        </code>
+                            <form onSubmit={handleSubmit} className="space-y-5">
+                                {/* Preview Card */}
+                                <div className="p-4 bg-muted/30 rounded-xl border border-dashed border-border flex flex-col items-center justify-center gap-2">
+                                    <span className="text-[10px] uppercase font-bold text-muted-foreground">Preview Visual</span>
+                                    <div className={`px-4 py-2 rounded-lg font-bold text-sm flex items-center gap-2 transition-all ${formData.color_class}`}>
+                                        <FaCube /> {formData.name || 'Nome da Tech'}
                                     </div>
                                 </div>
-                            ))}
-                        </div>
-                    )}
-                </div>
 
-            </div>
+                                <div className="space-y-1">
+                                    <label className="text-xs font-bold uppercase text-muted-foreground ml-1">Nome</label>
+                                    <input
+                                        value={formData.name}
+                                        onChange={e => setFormData({ ...formData, name: e.target.value })}
+                                        className="w-full bg-background border border-border rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-primary/50 font-bold placeholder:font-normal"
+                                        placeholder="Ex: React.js"
+                                        required
+                                    />
+                                </div>
+
+                                <div className="space-y-1">
+                                    <label className="text-xs font-bold uppercase text-muted-foreground ml-1 flex justify-between">
+                                        <span>Icon Key</span>
+                                        <a href="https://react-icons.github.io/react-icons/" target="_blank" rel="noreferrer" className="text-primary hover:underline cursor-pointer">Ver Ícones</a>
+                                    </label>
+                                    <div className="relative">
+                                        <FaCode className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                                        <input
+                                            value={formData.icon_key}
+                                            onChange={e => setFormData({ ...formData, icon_key: e.target.value })}
+                                            className="w-full bg-background border border-border rounded-xl pl-10 pr-4 py-3 outline-none focus:ring-2 focus:ring-primary/50 font-mono text-sm"
+                                            placeholder="Ex: SiReact, FaPython..."
+                                        />
+                                    </div>
+                                    <p className="text-[10px] text-muted-foreground ml-1">
+                                        O nome exato do componente do React Icons.
+                                    </p>
+                                </div>
+
+                                <div className="space-y-3">
+                                    <label className="text-xs font-bold uppercase text-muted-foreground ml-1 flex items-center gap-2">
+                                        <FaPalette /> Estilo (Presets)
+                                    </label>
+
+                                    {/* Color Presets Grid */}
+                                    <div className="grid grid-cols-4 gap-2">
+                                        {COLOR_PRESETS.map((preset) => (
+                                            <button
+                                                key={preset.name}
+                                                type="button"
+                                                onClick={() => setFormData({ ...formData, color_class: preset.value })}
+                                                className={`h-8 rounded-lg border flex items-center justify-center transition-all hover:scale-110 active:scale-95 ${preset.value} ${formData.color_class === preset.value ? 'ring-2 ring-foreground ring-offset-2 ring-offset-background' : ''}`}
+                                                title={preset.name}
+                                            >
+                                                <div className="w-2 h-2 rounded-full bg-current opacity-50"></div>
+                                            </button>
+                                        ))}
+                                    </div>
+
+                                    {/* Custom Input (Advanced) */}
+                                    <input
+                                        value={formData.color_class}
+                                        onChange={e => setFormData({ ...formData, color_class: e.target.value })}
+                                        className="w-full bg-muted/50 border border-border rounded-lg px-3 py-2 text-[10px] font-mono text-muted-foreground outline-none focus:border-primary"
+                                        placeholder="Classes Tailwind customizadas..."
+                                    />
+                                </div>
+
+                                <button
+                                    type="submit"
+                                    disabled={isSaving}
+                                    className="w-full bg-primary text-primary-foreground py-3.5 rounded-xl font-bold hover:brightness-110 shadow-lg shadow-primary/25 active:scale-95 transition-all disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                                >
+                                    {isEditing ? <FaSave /> : <FaPlus />}
+                                    {isEditing ? 'Atualizar Tecnologia' : 'Adicionar Tecnologia'}
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+
+                    {/* LISTA DE TECHS (Coluna Direita) */}
+                    <div className="lg:col-span-8">
+                        {isLoading ? (
+                            <div className="text-center py-20 opacity-50 animate-pulse">Carregando biblioteca...</div>
+                        ) : (
+                            <div className="space-y-4">
+                                <div className="flex justify-between items-center px-2">
+                                    <h3 className="font-bold text-muted-foreground text-sm uppercase tracking-wider">Biblioteca ({techs.length})</h3>
+                                </div>
+
+                                <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4">
+                                    {techs.map(tech => (
+                                        <div
+                                            key={tech.id}
+                                            className="group bg-card border border-border hover:border-primary/50 p-4 rounded-2xl relative transition-all hover:shadow-md flex flex-col gap-3"
+                                        >
+                                            {/* Actions Overlay */}
+                                            <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity z-10">
+                                                <button
+                                                    onClick={() => handleEdit(tech)}
+                                                    className="p-1.5 bg-background border border-border rounded-md text-muted-foreground hover:text-primary hover:border-primary transition-colors shadow-sm"
+                                                    title="Editar"
+                                                >
+                                                    <FaEdit size={10} />
+                                                </button>
+                                                <button
+                                                    onClick={() => handleDelete(tech.id)}
+                                                    className="p-1.5 bg-background border border-border rounded-md text-muted-foreground hover:text-red-500 hover:border-red-500 transition-colors shadow-sm"
+                                                    title="Excluir"
+                                                >
+                                                    <FaTrash size={10} />
+                                                </button>
+                                            </div>
+
+                                            {/* Badge Preview */}
+                                            <div className="flex justify-center py-2">
+                                                <div className={`px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-2 ${tech.color_class}`}>
+                                                    <FaCube /> {tech.name}
+                                                </div>
+                                            </div>
+
+                                            {/* Tech Info */}
+                                            <div className="text-center border-t border-border pt-3">
+                                                <code className="text-[10px] text-muted-foreground bg-muted/50 px-2 py-1 rounded-md font-mono block truncate">
+                                                    {tech.icon_key || 'No Icon'}
+                                                </code>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+
+                                {techs.length === 0 && (
+                                    <div className="text-center py-20 border-2 border-dashed border-border rounded-3xl opacity-50">
+                                        <p>Nenhuma tecnologia cadastrada.</p>
+                                    </div>
+                                )}
+                            </div>
+                        )}
+                    </div>
+
+                </div>
+            </main>
         </div>
     );
 };
