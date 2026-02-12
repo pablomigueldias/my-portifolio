@@ -17,12 +17,11 @@ const PostEditor = () => {
 
     const [notes, setNotes] = useState('');
     const [viewMode, setViewMode] = useState('editor');
-    
+
     const [isLoadingData, setIsLoadingData] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
     const [isGeneratingAI, setIsGeneratingAI] = useState(false);
 
-    // Estado do Formulário
     const [formData, setFormData] = useState({
         title: '',
         content: '',
@@ -66,9 +65,9 @@ const PostEditor = () => {
         try {
             const draft = await blogService.generateDraft(notes);
             const contentVal = typeof draft.content === 'object' ? JSON.stringify(draft.content) : draft.content;
-            
-            setFormData(prev => ({ 
-                ...prev, 
+
+            setFormData(prev => ({
+                ...prev,
                 title: draft.title || prev.title,
                 content: contentVal,
                 excerpt: draft.excerpt || prev.excerpt,
@@ -90,21 +89,33 @@ const PostEditor = () => {
         }
 
         setIsSaving(true);
-        const savePromise = slug 
-            ? blogService.updatePost(slug, formData) 
-            : blogService.createPost(formData);
+
+        const payload = {
+            ...formData,
+            published_at: formData.published_at ? formData.published_at : null
+        };
+
+        delete payload.id;
+        delete payload.created_at;
+        delete payload.updated_at;
+
+        const savePromise = slug
+            ? blogService.updatePost(slug, payload)
+            : blogService.createPost(payload);
 
         toast.promise(savePromise, {
-            loading: 'Salvando alterações...',
-            success: 'Artigo salvo com sucesso!',
-            error: 'Erro ao salvar artigo.',
+            loading: 'Salvando...',
+            success: 'Salvo com sucesso!',
+            error: (err) => {
+                console.error(err);
+                return `Erro: ${err.response?.data?.detail || 'Falha ao salvar'}`;
+            }
         });
 
         try {
             await savePromise;
             if (!slug) setTimeout(() => navigate('/admin'), 1000);
         } catch (err) {
-            console.error(err);
         } finally {
             setIsSaving(false);
         }
@@ -163,7 +174,7 @@ const PostEditor = () => {
                                     </div>
                                 </div>
                             )}
-                            
+
                             <ContentWorkspace
                                 formData={formData}
                                 setFormData={setFormData}

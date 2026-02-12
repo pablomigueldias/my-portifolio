@@ -257,7 +257,10 @@ const ListItem = ({ item, type, onEdit, onDelete }) => {
 };
 
 const StatusBadge = ({ published, date }) => {
-    const isScheduled = published && new Date(date) > new Date();
+    const now = new Date();
+    const publishDate = date ? new Date(date) : null;
+
+    const isScheduled = published && publishDate && publishDate > now;
 
     if (!published) {
         return (
@@ -270,7 +273,7 @@ const StatusBadge = ({ published, date }) => {
     if (isScheduled) {
         return (
             <span className="bg-blue-500/10 text-blue-600 border border-blue-500/20 px-2.5 py-0.5 rounded-full text-[10px] uppercase font-black tracking-wider flex items-center gap-1">
-                ⏳ Agendado
+                ⏳ Agendado ({publishDate.toLocaleDateString()})
             </span>
         );
     }
