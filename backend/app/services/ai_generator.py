@@ -3,20 +3,20 @@ import os
 import json
 from fastapi import HTTPException, UploadFile
 
+
 def configure_genai():
     api_key = os.getenv("GEMINI_API_KEY")
     if not api_key:
         print("DEBUG GENAI ERROR: GEMINI_API_KEY não encontrada no .env")
-        raise HTTPException(status_code=500, detail="Chave de API não configurada.")
-    genai.configure(api_key=api_key) #type: ignore
+        raise HTTPException(
+            status_code=500, detail="Chave de API não configurada.")
+    genai.configure(api_key=api_key)  # type: ignore
+
 
 def generate_blog_post(raw_notes: str) -> dict:
     configure_genai()
 
-    model = genai.GenerativeModel( #type: ignore
-        'gemini-1.5-flash',
-        generation_config={"response_mime_type": "application/json"}
-    )
+    model = genai.GenerativeModel('gemini-pro')  # type: ignore
 
     prompt = f"""
     Aja como Pablo, estudante de ADS na Impacta, Full Stack Developer e Tech Writer.
@@ -39,10 +39,10 @@ def generate_blog_post(raw_notes: str) -> dict:
         "read_time": "5 min"
     }}
     """
-    
+
     try:
         response = model.generate_content(prompt)
-        
+
         if not response.text:
             raise HTTPException(status_code=500, detail="A IA retornou vazio.")
 
@@ -53,16 +53,17 @@ def generate_blog_post(raw_notes: str) -> dict:
         error_msg = str(e)
         raise HTTPException(status_code=500, detail=f"Erro na IA: {error_msg}")
 
+
 async def generate_from_file(file: UploadFile) -> dict:
     configure_genai()
-    
-    model = genai.GenerativeModel( #type: ignore
+
+    model = genai.GenerativeModel(  # type: ignore
         'gemini-1.5-flash',
         generation_config={"response_mime_type": "application/json"}
     )
-    
+
     content_bytes = await file.read()
-    
+
     try:
         text_content = content_bytes.decode('utf-8')
     except:
@@ -81,4 +82,5 @@ async def generate_from_file(file: UploadFile) -> dict:
         return json.loads(response.text)
     except Exception as e:
         print(f"DEBUG FILE GENAI ERROR: {str(e)}")
-        raise HTTPException(status_code=500, detail="Erro ao processar arquivo.")
+        raise HTTPException(
+            status_code=500, detail="Erro ao processar arquivo.")
