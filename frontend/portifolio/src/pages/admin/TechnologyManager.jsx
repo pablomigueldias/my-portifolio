@@ -7,7 +7,6 @@ import {
 } from 'react-icons/fa';
 import { portfolioService } from '../../services/api';
 
-// Presets para agilizar seu trabalho (Tailwind Classes)
 const COLOR_PRESETS = [
     { name: 'Blue', value: 'bg-blue-500/10 text-blue-500 border border-blue-500/20' },
     { name: 'Green', value: 'bg-emerald-500/10 text-emerald-500 border border-emerald-500/20' },
@@ -131,7 +130,6 @@ const TechnologyManager = () => {
             <main className="max-w-7xl mx-auto px-4 md:px-6 py-8">
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
 
-                    {/* FORMULÁRIO (Coluna Esquerda - Sticky) */}
                     <div className="lg:col-span-4 lg:sticky lg:top-24">
                         <div className="bg-card border border-border p-6 rounded-3xl shadow-sm">
                             <div className="flex items-center justify-between mb-6">
@@ -190,7 +188,6 @@ const TechnologyManager = () => {
                                         <FaPalette /> Estilo (Presets)
                                     </label>
 
-                                    {/* Color Presets Grid */}
                                     <div className="grid grid-cols-4 gap-2">
                                         {COLOR_PRESETS.map((preset) => (
                                             <button
@@ -205,7 +202,6 @@ const TechnologyManager = () => {
                                         ))}
                                     </div>
 
-                                    {/* Custom Input (Advanced) */}
                                     <input
                                         value={formData.color_class}
                                         onChange={e => setFormData({ ...formData, color_class: e.target.value })}
@@ -226,7 +222,6 @@ const TechnologyManager = () => {
                         </div>
                     </div>
 
-                    {/* LISTA DE TECHS (Coluna Direita) */}
                     <div className="lg:col-span-8">
                         {isLoading ? (
                             <div className="text-center py-20 opacity-50 animate-pulse">Carregando biblioteca...</div>
@@ -242,7 +237,6 @@ const TechnologyManager = () => {
                                             key={tech.id}
                                             className="group bg-card border border-border hover:border-primary/50 p-4 rounded-2xl relative transition-all hover:shadow-md flex flex-col gap-3"
                                         >
-                                            {/* Actions Overlay */}
                                             <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity z-10">
                                                 <button
                                                     onClick={() => handleEdit(tech)}
@@ -260,14 +254,12 @@ const TechnologyManager = () => {
                                                 </button>
                                             </div>
 
-                                            {/* Badge Preview */}
                                             <div className="flex justify-center py-2">
                                                 <div className={`px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-2 ${tech.color_class}`}>
                                                     <FaCube /> {tech.name}
                                                 </div>
                                             </div>
 
-                                            {/* Tech Info */}
                                             <div className="text-center border-t border-border pt-3">
                                                 <code className="text-[10px] text-muted-foreground bg-muted/50 px-2 py-1 rounded-md font-mono block truncate">
                                                     {tech.icon_key || 'No Icon'}

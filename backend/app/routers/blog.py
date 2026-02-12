@@ -1,6 +1,6 @@
-from typing import List
+from typing import List, Optional
 from datetime import datetime
-from fastapi import APIRouter, Depends, HTTPException, status, UploadFile, File
+from fastapi import APIRouter, Depends, HTTPException, status, UploadFile, File, Query
 from sqlalchemy.orm import Session
 
 # Imports Internos
@@ -14,18 +14,22 @@ from app.core.security import validate_admin
 router = APIRouter(prefix="/blog", tags=["Blog"])
 
 
-@router.get("/", response_model=List[PostResponse], summary="Listar posts publicados")
-def list_public_posts(
+@router.get("/", response_model=List[PostResponse])
+def read_posts(
     skip: int = 0,
-    limit: int = 10,
+    limit: int = 100,
+    status: str = Query(
+        "published", description="Filtro: 'published' ou 'all'"),
     db: Session = Depends(get_db)
 ):
-    posts = db.query(Post)\
-        .filter(Post.published == True)\
-        .order_by(Post.create_at.desc())\
-        .offset(skip)\
-        .limit(limit)\
-        .all()
+    query = db.query(Post)
+
+    if status == "published":
+        query = query.filter(Post.published == True)
+
+    posts = query.order_by(Post.create_at.desc()).offset(
+        skip).limit(limit).all()
+
     return posts
 
 
@@ -56,7 +60,7 @@ def delete_post(slug: str, db: Session = Depends(get_db)):
     if not success:
         raise HTTPException(
             status_code=404, detail="Artigo não encontrado ou já excluído.")
-    return None 
+    return None
 
 
 @router.post("/generate", dependencies=[Depends(validate_admin)])

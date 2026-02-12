@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { toast, Toaster } from 'react-hot-toast'; // Notificações Profissionais
+import { toast, Toaster } from 'react-hot-toast';
 import { FaSpinner, FaMagic, FaSave, FaArrowLeft } from 'react-icons/fa';
 
 import { blogService } from '../../services/api';
@@ -10,20 +10,17 @@ import ContentWorkspace from './components/ContentWorkspace';
 import MetadataSidebar from './components/MetadataSidebar';
 
 const PostEditor = () => {
-    // --- Routing & Hooks ---
+
     const { slug } = useParams();
     const navigate = useNavigate();
 
-    // --- State Management ---
     const [notes, setNotes] = useState('');
     const [viewMode, setViewMode] = useState('editor');
     
-    // Loading States Granulares
     const [isLoadingData, setIsLoadingData] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
     const [isGeneratingAI, setIsGeneratingAI] = useState(false);
 
-    // Form Data Inicial
     const [formData, setFormData] = useState({
         title: '',
         content: '',
@@ -33,7 +30,6 @@ const PostEditor = () => {
         image_url: ''
     });
 
-    // --- 1. Carregamento de Dados ---
     useEffect(() => {
         if (!slug) return;
 
@@ -54,9 +50,6 @@ const PostEditor = () => {
         loadPost();
     }, [slug, navigate]);
 
-    // --- 2. Handlers de Inteligência Artificial ---
-    
-    // Geração via Arquivo (Upload)
     const handleFileGenerate = async (file) => {
         if (!file) return;
         
@@ -69,7 +62,6 @@ const PostEditor = () => {
             
             const draft = await blogService.generateFromFile(data);
             
-            // Merge inteligente dos dados
             setFormData(prev => ({
                 ...prev,
                 title: draft.title || prev.title,
@@ -89,7 +81,6 @@ const PostEditor = () => {
         }
     };
 
-    // Geração via Texto (Notas)
     const handleAIGenerate = async () => {
         if (!notes.trim()) {
             toast('Escreva algumas notas primeiro.', { icon: '✍️' });
@@ -100,7 +91,6 @@ const PostEditor = () => {
         setIsGeneratingAI(true);
 
         try {
-            // Sanitização básica
             const sanitizedNotes = notes.replace(/[\x00-\x09\x0B\x0C\x0E-\x1F\x7F-\x9F]/g, "");
             
             const draft = await blogService.generateDraft(sanitizedNotes);
@@ -120,7 +110,6 @@ const PostEditor = () => {
         }
     };
 
-    // --- 3. Salvamento (Create / Update) ---
     const handleSave = async () => {
         if (!formData.title) {
             toast.error("O título é obrigatório.");
@@ -128,7 +117,6 @@ const PostEditor = () => {
         }
 
         setIsSaving(true);
-        // Toast com Promise (Loading -> Success/Error automático)
         const savePromise = slug 
             ? blogService.updatePost(slug, formData) 
             : blogService.createPost(formData);
@@ -136,7 +124,6 @@ const PostEditor = () => {
         toast.promise(savePromise, {
             loading: 'Salvando alterações...',
             success: () => {
-                // Se for criação, redireciona. Se for update, só avisa.
                 if (!slug) navigate('/admin'); 
                 return <b>Artigo salvo com sucesso!</b>;
             },
@@ -152,7 +139,6 @@ const PostEditor = () => {
         }
     };
 
-    // --- Renderização de Loading Inicial ---
     if (isLoadingData) {
         return (
             <div className="h-screen flex flex-col items-center justify-center bg-background gap-4">
@@ -162,19 +148,16 @@ const PostEditor = () => {
         );
     }
 
-    // --- Renderização Principal ---
     return (
         <div className="min-h-screen flex flex-col bg-background pb-20">
-            {/* Notificações flutuantes */}
             <Toaster position="top-right" reverseOrder={false} />
 
-            {/* HEADER FIXO */}
             <div className="sticky top-0 z-50 bg-background/80 backdrop-blur-xl border-b border-border shadow-sm">
                 <div className="max-w-[1920px] mx-auto px-6">
                     <EditorHeader
                         slug={slug}
                         onSave={handleSave}
-                        isSaving={isSaving} // Passamos o estado para desabilitar o botão
+                        isSaving={isSaving}
                         viewMode={viewMode}
                         setViewMode={setViewMode}
                         onBack={() => navigate('/admin')}
@@ -182,11 +165,9 @@ const PostEditor = () => {
                 </div>
             </div>
 
-            {/* LAYOUT GRID DE 3 COLUNAS */}
             <main className="flex-1 max-w-[1920px] mx-auto w-full px-4 md:px-6 py-8">
                 <div className="grid grid-cols-12 gap-6 lg:gap-8 items-start">
 
-                    {/* COLUNA 1: FERRAMENTAS & IA (Esquerda) */}
                     <aside className="hidden xl:block col-span-3 sticky top-24 h-[calc(100vh-8rem)] overflow-y-auto pr-2 custom-scrollbar">
                         <div className="space-y-6">
                             <div className="flex items-center gap-2 text-primary font-bold uppercase text-xs tracking-widest mb-4 border-b border-border pb-2">
@@ -202,10 +183,8 @@ const PostEditor = () => {
                         </div>
                     </aside>
 
-                    {/* COLUNA 2: EDITOR PRINCIPAL (Centro) */}
                     <section className="col-span-12 xl:col-span-6 flex flex-col gap-6 min-h-[80vh]">
                         <div className={`relative flex-1 bg-card rounded-3xl border border-border shadow-sm transition-all duration-300 overflow-hidden ${viewMode === 'editor' ? 'ring-1 ring-primary/20' : ''}`}>
-                            {/* Loading Overlay para IA */}
                             {isGeneratingAI && (
                                 <div className="absolute inset-0 z-10 bg-background/50 backdrop-blur-sm flex items-center justify-center">
                                     <div className="bg-card border border-border px-6 py-4 rounded-xl shadow-xl flex items-center gap-3">
@@ -223,7 +202,6 @@ const PostEditor = () => {
                         </div>
                     </section>
 
-                    {/* COLUNA 3: METADADOS & SEO (Direita) */}
                     <aside className="col-span-12 xl:col-span-3 xl:sticky xl:top-24 space-y-6">
                         <div className="xl:h-[calc(100vh-8rem)] overflow-y-auto pl-2 custom-scrollbar">
                             <div className="flex items-center gap-2 text-muted-foreground font-bold uppercase text-xs tracking-widest mb-4 border-b border-border pb-2">

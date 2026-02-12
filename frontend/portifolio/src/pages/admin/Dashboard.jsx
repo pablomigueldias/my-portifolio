@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { toast } from 'react-hot-toast'; // Notificações bonitas
+import { toast } from 'react-hot-toast';
 import {
     FaPlus, FaEdit, FaTrash, FaSearch,
     FaFileAlt, FaProjectDiagram, FaSpinner,
@@ -72,7 +72,6 @@ const Dashboard = () => {
         }
     };
 
-    // --- Filtros ---
     const filteredData = data.filter(item =>
         item.title?.toLowerCase().includes(searchTerm.toLowerCase())
     );
@@ -107,7 +106,6 @@ const Dashboard = () => {
             
             <div className="flex flex-col md:flex-row gap-6 justify-between items-end md:items-center">
                 
-                {/* Abas */}
                 <div className="flex p-1 bg-muted/50 rounded-xl border border-border/50">
                     <TabButton
                         active={activeTab === 'posts'}
@@ -192,8 +190,10 @@ const TabButton = ({ active, onClick, icon, label }) => (
 );
 
 const ListItem = ({ item, type, onEdit, onDelete }) => {
-    const formattedDate = item.created_at 
-        ? new Date(item.created_at).toLocaleDateString('pt-BR') 
+    const dateValue = item.create_at || item.created_at || item.published_at;
+    
+    const formattedDate = dateValue
+        ? new Date(dateValue).toLocaleDateString('pt-BR') 
         : 'Sem data';
 
     return (

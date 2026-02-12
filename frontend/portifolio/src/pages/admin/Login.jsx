@@ -19,9 +19,7 @@ const Login = () => {
     setIsLoading(true);
 
     try {
-      // Pequeno delay artificial para mostrar a animação de loading (opcional)
-      // await new Promise(resolve => setTimeout(resolve, 800)); 
-      
+  
       const success = await login(username, password);
       if (success) {
         navigate('/admin');
@@ -38,11 +36,9 @@ const Login = () => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-background relative overflow-hidden px-4">
       
-      {/* --- BACKGROUND ANIMADO (Blobs) --- */}
       <div className="absolute top-[-10%] left-[-10%] w-96 h-96 bg-primary/20 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-pulse"></div>
       <div className="absolute bottom-[-10%] right-[-10%] w-96 h-96 bg-secondary/20 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-pulse delay-1000"></div>
       <div className="absolute top-[20%] right-[20%] w-72 h-72 bg-primary/10 rounded-full mix-blend-multiply filter blur-3xl opacity-50 animate-pulse delay-700"></div>
-      {/* ---------------------------------- */}
 
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
@@ -99,7 +95,6 @@ const Login = () => {
               </div>
             </div>
 
-            {/* Mensagem de Erro */}
             {error && (
               <motion.div 
                 initial={{ opacity: 0, height: 0 }}
@@ -111,7 +106,6 @@ const Login = () => {
               </motion.div>
             )}
 
-            {/* Botão de Login */}
             <button
               type="submit"
               disabled={isLoading}
