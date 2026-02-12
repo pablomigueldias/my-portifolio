@@ -1,0 +1,66 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html,
+body {
+  overflow-x: hidden;
+  width: 100%;
+  position: relative;
+}
+
+@layer base {
+  :root {
+    --background: 244 244 245;
+
+    --foreground: 24 24 27;
+
+    --card: 255 255 255;
+    --card-foreground: 24 24 27;
+
+    --primary: 5 150 105;
+    --primary-foreground: 255 255 255;
+
+    --muted: 228 228 231;
+    --muted-foreground: 82 82 91;
+
+    --border: 212 212 216;
+  }
+  .dark {
+    --background: 9 9 11;
+    --foreground: 250 250 250;
+
+    --card: 24 24 27;
+    --card-foreground: 250 250 250;
+
+    --primary: 16 185 129;
+    --primary-foreground: 255 255 255;
+
+    --muted: 39 39 42;
+    --muted-foreground: 161 161 170;
+
+    --border: 63 63 70;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground transition-colors duration-300;
+  }
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  @apply bg-muted;
+}
+::-webkit-scrollbar-thumb {
+  @apply rounded-full bg-muted-foreground/30;
+}
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-muted-foreground/50;
+}
