@@ -1,16 +1,17 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { toast, Toaster } from 'react-hot-toast';
-import { FaSpinner, FaMagic, FaSave, FaArrowLeft } from 'react-icons/fa';
+import { FaSpinner, FaMagic, FaSave } from 'react-icons/fa';
 
 import { blogService } from '../../services/api';
+
+
 import EditorHeader from './components/EditorHeader';
 import NotesSidebar from './components/NotesSidebar';
 import ContentWorkspace from './components/ContentWorkspace';
 import MetadataSidebar from './components/MetadataSidebar';
 
 const PostEditor = () => {
-
     const { slug } = useParams();
     const navigate = useNavigate();
 
@@ -21,12 +22,14 @@ const PostEditor = () => {
     const [isSaving, setIsSaving] = useState(false);
     const [isGeneratingAI, setIsGeneratingAI] = useState(false);
 
+    // Estado do Formulário
     const [formData, setFormData] = useState({
         title: '',
         content: '',
         excerpt: '',
-        category: 'Python',
+        category: 'Geral',
         published: false,
+        published_at: null,
         image_url: ''
     });
 
@@ -37,7 +40,10 @@ const PostEditor = () => {
             setIsLoadingData(true);
             try {
                 const data = await blogService.getPostBySlug(slug);
-                setFormData(data);
+                setFormData({
+                    ...data,
+                    published_at: data.published_at ? data.published_at.split('T')[0] : ''
+                });
             } catch (error) {
                 console.error("Erro ao carregar post:", error);
                 toast.error("Não foi possível carregar o artigo.");
@@ -50,57 +56,24 @@ const PostEditor = () => {
         loadPost();
     }, [slug, navigate]);
 
-    const handleFileGenerate = async (file) => {
-        if (!file) return;
-        
-        const loadingToast = toast.loading("Lendo arquivo e gerando rascunho...");
-        setIsGeneratingAI(true);
-
-        try {
-            const data = new FormData();
-            data.append('file', file);
-            
-            const draft = await blogService.generateFromFile(data);
-            
-            setFormData(prev => ({
-                ...prev,
-                title: draft.title || prev.title,
-                content: typeof draft.content === 'object' 
-                    ? JSON.stringify(draft.content) 
-                    : draft.content,
-                excerpt: draft.excerpt || prev.excerpt,
-                category: draft.category || prev.category
-            }));
-
-            toast.success("Rascunho gerado com sucesso!", { id: loadingToast });
-        } catch (error) {
-            console.error(error);
-            toast.error("Erro ao processar arquivo.", { id: loadingToast });
-        } finally {
-            setIsGeneratingAI(false);
-        }
-    };
-
     const handleAIGenerate = async () => {
         if (!notes.trim()) {
             toast('Escreva algumas notas primeiro.', { icon: '✍️' });
             return;
         }
-
         const loadingToast = toast.loading("A IA está escrevendo...");
         setIsGeneratingAI(true);
-
         try {
-            const sanitizedNotes = notes.replace(/[\x00-\x09\x0B\x0C\x0E-\x1F\x7F-\x9F]/g, "");
+            const draft = await blogService.generateDraft(notes);
+            const contentVal = typeof draft.content === 'object' ? JSON.stringify(draft.content) : draft.content;
             
-            const draft = await blogService.generateDraft(sanitizedNotes);
-            
-            const finalContent = typeof draft.content === 'object' 
-                ? JSON.stringify(draft.content, null, 2) 
-                : draft.content;
-
-            setFormData(prev => ({ ...prev, ...draft, content: finalContent }));
-            
+            setFormData(prev => ({ 
+                ...prev, 
+                title: draft.title || prev.title,
+                content: contentVal,
+                excerpt: draft.excerpt || prev.excerpt,
+                category: draft.category || prev.category
+            }));
             toast.success("Conteúdo gerado!", { id: loadingToast });
         } catch (error) {
             console.error(error);
@@ -123,15 +96,13 @@ const PostEditor = () => {
 
         toast.promise(savePromise, {
             loading: 'Salvando alterações...',
-            success: () => {
-                if (!slug) navigate('/admin'); 
-                return <b>Artigo salvo com sucesso!</b>;
-            },
-            error: <b>Erro ao salvar artigo.</b>,
+            success: 'Artigo salvo com sucesso!',
+            error: 'Erro ao salvar artigo.',
         });
 
         try {
             await savePromise;
+            if (!slug) setTimeout(() => navigate('/admin'), 1000);
         } catch (err) {
             console.error(err);
         } finally {
@@ -152,10 +123,10 @@ const PostEditor = () => {
         <div className="min-h-screen flex flex-col bg-background pb-20">
             <Toaster position="top-right" reverseOrder={false} />
 
-            <div className="sticky top-0 z-50 bg-background/80 backdrop-blur-xl border-b border-border shadow-sm">
-                <div className="max-w-[1920px] mx-auto px-6">
+            <div className="sticky top-0 z-40 bg-background/80 backdrop-blur-xl border-b border-border shadow-sm">
+                <div className="max-w-[1600px] mx-auto px-6">
                     <EditorHeader
-                        slug={slug}
+                        isEditing={!!slug}
                         onSave={handleSave}
                         isSaving={isSaving}
                         viewMode={viewMode}
@@ -165,7 +136,7 @@ const PostEditor = () => {
                 </div>
             </div>
 
-            <main className="flex-1 max-w-[1920px] mx-auto w-full px-4 md:px-6 py-8">
+            <main className="flex-1 max-w-[1600px] mx-auto w-full px-4 md:px-6 py-8">
                 <div className="grid grid-cols-12 gap-6 lg:gap-8 items-start">
 
                     <aside className="hidden xl:block col-span-3 sticky top-24 h-[calc(100vh-8rem)] overflow-y-auto pr-2 custom-scrollbar">
@@ -177,7 +148,6 @@ const PostEditor = () => {
                                 notes={notes}
                                 setNotes={setNotes}
                                 onGenerate={handleAIGenerate}
-                                onFileUpload={handleFileGenerate}
                                 isLoading={isGeneratingAI}
                             />
                         </div>
@@ -203,7 +173,7 @@ const PostEditor = () => {
                     </section>
 
                     <aside className="col-span-12 xl:col-span-3 xl:sticky xl:top-24 space-y-6">
-                        <div className="xl:h-[calc(100vh-8rem)] overflow-y-auto pl-2 custom-scrollbar">
+                        <div className="bg-card border border-border p-5 rounded-2xl shadow-sm">
                             <div className="flex items-center gap-2 text-muted-foreground font-bold uppercase text-xs tracking-widest mb-4 border-b border-border pb-2">
                                 <FaSave /> Publicação & SEO
                             </div>
