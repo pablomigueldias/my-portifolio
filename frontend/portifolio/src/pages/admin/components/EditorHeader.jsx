@@ -1,32 +1,50 @@
-import { FaChevronLeft, FaSave, FaCode, FaEye } from 'react-icons/fa';
-import { useNavigate } from 'react-router-dom';
+import React from 'react';
+import { FaArrowLeft, FaSave, FaEye, FaPen, FaSpinner } from 'react-icons/fa';
 
-const EditorHeader = ({ slug, onSave, viewMode, setViewMode }) => {
-    const navigate = useNavigate();
+const EditorHeader = ({ isEditing, onSave, isSaving, viewMode, setViewMode, onBack }) => {
     return (
-        <header className="flex items-center justify-between border-b border-border pb-6">
+        <div className="flex justify-between items-center py-4">
             <div className="flex items-center gap-4">
-                <button onClick={() => navigate('/admin')} className="p-2 hover:bg-muted rounded-full transition-colors">
-                    <FaChevronLeft />
+                <button 
+                    onClick={onBack} 
+                    className="p-2 text-muted-foreground hover:bg-muted hover:text-foreground rounded-full transition-colors"
+                >
+                    <FaArrowLeft />
                 </button>
-                <h1 className="text-2xl font-bold tracking-tight">
-                    {slug ? 'Refinar Artigo' : 'Nova Automação via Gemini Pro'}
-                </h1>
+                <div>
+                    <h1 className="text-xl font-bold tracking-tight">
+                        {isEditing ? 'Editar Artigo' : 'Novo Artigo'}
+                    </h1>
+                </div>
             </div>
-            <div className="flex items-center gap-3">
-                <div className="flex bg-muted p-1 rounded-lg">
-                    <button onClick={() => setViewMode('editor')} className={`px-4 py-2 rounded-md text-xs font-bold ${viewMode === 'editor' ? 'bg-background shadow-sm' : 'opacity-50'}`}>
-                        <FaCode className="inline mr-2" /> EDITOR
+
+            <div className="flex gap-3">
+                <div className="flex bg-muted/50 p-1 rounded-lg border border-border">
+                    <button
+                        onClick={() => setViewMode('editor')}
+                        className={`px-3 py-1.5 rounded-md text-xs font-bold flex items-center gap-2 transition-all ${viewMode === 'editor' ? 'bg-background shadow text-foreground' : 'text-muted-foreground'}`}
+                    >
+                        <FaPen size={10} /> Editor
                     </button>
-                    <button onClick={() => setViewMode('preview')} className={`px-4 py-2 rounded-md text-xs font-bold ${viewMode === 'preview' ? 'bg-background shadow-sm' : 'opacity-50'}`}>
-                        <FaEye className="inline mr-2" /> PREVIEW
+                    <button
+                        onClick={() => setViewMode('preview')}
+                        className={`px-3 py-1.5 rounded-md text-xs font-bold flex items-center gap-2 transition-all ${viewMode === 'preview' ? 'bg-background shadow text-foreground' : 'text-muted-foreground'}`}
+                    >
+                        <FaEye size={10} /> Preview
                     </button>
                 </div>
-                <button onClick={onSave} className="flex items-center gap-2 bg-primary text-primary-foreground px-6 py-2.5 rounded-xl font-bold hover:brightness-110 shadow-lg">
-                    <FaSave /> SALVAR
+
+                <button
+                    onClick={onSave}
+                    disabled={isSaving}
+                    className="flex items-center gap-2 bg-primary text-primary-foreground px-5 py-2 rounded-xl font-bold text-sm hover:brightness-110 shadow-lg active:scale-95 transition-all disabled:opacity-70"
+                >
+                    {isSaving ? <FaSpinner className="animate-spin" /> : <FaSave />}
+                    {isSaving ? 'Salvando...' : 'Salvar'}
                 </button>
             </div>
-        </header>
+        </div>
     );
 };
+
 export default EditorHeader;

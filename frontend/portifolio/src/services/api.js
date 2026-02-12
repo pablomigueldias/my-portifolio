@@ -4,11 +4,6 @@ const getBaseURL = () => {
   return import.meta.env.VITE_API_URL || 'http://localhost:8000';
 };
 
-const getAuthHeader = () => {
-  const token = localStorage.getItem('admin_token');
-  return token ? { Authorization: `Bearer ${token}` } : {};
-};
-
 export const api = axios.create({
   baseURL: getBaseURL(),
   timeout: 10000,

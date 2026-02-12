@@ -1,32 +1,33 @@
 import React from 'react';
-import MarkdownRenderer from '../../../components/ui/MarkdownRenderer';
+import ReactMarkdown from 'react-markdown';
 
 const ContentWorkspace = ({ formData, setFormData, viewMode }) => {
-
-    if (viewMode === 'preview') {
-        return (
-            <div className="prose prose-lg dark:prose-invert max-w-none p-8 md:p-12">
-                <h1>{formData.title || "Sem Título"}</h1>
-                <MarkdownRenderer content={formData.content} />
-            </div>
-        );
-    }
     return (
-        <div className="flex flex-col h-full min-h-[600px] p-6 md:p-8">
-            <input
-                type="text"
-                value={formData.title}
-                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                placeholder="Título do Artigo"
-                className="text-4xl md:text-5xl font-black bg-transparent border-none outline-none placeholder:text-muted-foreground/30 text-foreground mb-6 w-full"
-            />
+        <div className="flex flex-col h-full min-h-[600px]">
+            <div className="p-6 border-b border-border">
+                <input
+                    type="text"
+                    value={formData.title}
+                    onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                    placeholder="Título do Artigo..."
+                    className="w-full text-3xl font-black bg-transparent outline-none placeholder:text-muted-foreground/30"
+                />
+            </div>
 
-            <textarea
-                value={formData.content}
-                onChange={(e) => setFormData({ ...formData, content: e.target.value })}
-                placeholder="Conteúdo em Markdown..."
-                className="flex-1 w-full bg-transparent border-none outline-none resize-none text-lg text-muted-foreground/90 font-mono leading-relaxed"
-            />
+            <div className="flex-1 overflow-hidden relative">
+                {viewMode === 'editor' ? (
+                    <textarea
+                        value={formData.content}
+                        onChange={(e) => setFormData({ ...formData, content: e.target.value })}
+                        className="w-full h-full p-6 bg-transparent resize-none outline-none font-mono text-sm leading-relaxed"
+                        placeholder="Escreva seu artigo em Markdown aqui..."
+                    />
+                ) : (
+                    <div className="w-full h-full p-8 overflow-y-auto prose prose-invert max-w-none">
+                        <ReactMarkdown>{formData.content}</ReactMarkdown>
+                    </div>
+                )}
+            </div>
         </div>
     );
 };

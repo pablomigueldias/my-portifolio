@@ -1,24 +1,56 @@
 from typing import List, Optional
-from fastapi import APIRouter, Depends, HTTPException, Query, status
+from fastapi import APIRouter, Depends, HTTPException, Query, status, UploadFile, File
 from sqlalchemy.orm import Session
+from pydantic import BaseModel, field_validator
+import re
+import unicodedata
+from datetime import datetime
+
+# Imports do App
 from app.db.database import get_db
 from app.models.blog import Post
 from app.schemas.post import PostCreate, PostUpdate, PostResponse
 from app.routers.auth import get_current_user
-from datetime import datetime
-import re
-import unicodedata
+
+from app.services.ai_generator import generate_blog_post, generate_from_file
 
 router = APIRouter(
     prefix="/blog",
     tags=["Blog"]
 )
 
-def slugify(value: str) -> str:
+class AIRequest(BaseModel):
+    notes: str
 
+    @field_validator('notes')
+    @classmethod
+    def sanitize_control_chars(cls, v: str) -> str:
+        return "".join(ch for ch in v if ch >= " " or ch in "\n\r")
+
+
+def slugify(value: str) -> str:
     value = unicodedata.normalize('NFKD', value).encode('ascii', 'ignore').decode('ascii')
     value = re.sub(r'[^\w\s-]', '', value.lower())
     return re.sub(r'[-\s]+', '-', value).strip('-')
+
+
+@router.post("/generate")
+def generate_draft_endpoint(request: AIRequest):
+    try:
+        content = generate_blog_post(request.notes)
+        return content
+    except Exception as e:
+        print(f"Erro na IA: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.post("/generate-from-file")
+async def generate_from_file_endpoint(file: UploadFile = File(...)):
+    try:
+        content = await generate_from_file(file)
+        return content
+    except Exception as e:
+        print(f"Erro no Arquivo: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
 
 @router.get("/", response_model=List[PostResponse])
 def read_posts(
@@ -34,7 +66,7 @@ def read_posts(
             Post.published == True,
             (Post.published_at <= datetime.now()) | (Post.published_at == None)
         )
-    
+        
     return query.order_by(Post.create_at.desc()).offset(skip).limit(limit).all()
 
 @router.get("/{slug}/", response_model=PostResponse)
@@ -50,17 +82,17 @@ def create_post(
     db: Session = Depends(get_db),
     current_user: dict = Depends(get_current_user)
 ):
-
     base_slug = slugify(post.title)
     slug = base_slug
     counter = 1
     
+    # Garante slug único
     while db.query(Post).filter(Post.slug == slug).first():
         slug = f"{base_slug}-{counter}"
         counter += 1
 
     new_post = Post(
-        **post.model_dump(exclude={"slug"}),
+        **post.model_dump(exclude={"slug"}), 
         slug=slug
     )
     
