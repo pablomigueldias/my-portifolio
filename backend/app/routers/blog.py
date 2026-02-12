@@ -4,7 +4,8 @@ from sqlalchemy.orm import Session
 from app.db.database import get_db
 from app.models.blog import Post
 from app.schemas.post import PostCreate, PostUpdate, PostResponse
-from app.routers.auth import get_current_user # Garante que só admin mexe aqui
+from app.routers.auth import get_current_user
+from datetime import datetime
 import re
 import unicodedata
 
@@ -29,8 +30,11 @@ def read_posts(
     query = db.query(Post)
     
     if status == "published":
-        query = query.filter(Post.published == True)
-        
+        query = query.filter(
+            Post.published == True,
+            (Post.published_at <= datetime.now()) | (Post.published_at == None)
+        )
+    
     return query.order_by(Post.create_at.desc()).offset(skip).limit(limit).all()
 
 @router.get("/{slug}/", response_model=PostResponse)

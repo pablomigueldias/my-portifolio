@@ -180,8 +180,8 @@ const TabButton = ({ active, onClick, icon, label }) => (
     <button
         onClick={onClick}
         className={`flex items-center gap-2 px-6 py-2.5 rounded-lg text-sm font-bold transition-all ${active
-                ? 'bg-background text-foreground shadow-sm ring-1 ring-border'
-                : 'text-muted-foreground hover:text-foreground hover:bg-background/50'
+            ? 'bg-background text-foreground shadow-sm ring-1 ring-border'
+            : 'text-muted-foreground hover:text-foreground hover:bg-background/50'
             }`}
     >
         {icon} {label}
@@ -215,7 +215,7 @@ const ListItem = ({ item, type, onEdit, onDelete }) => {
                     <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
                         {type === 'posts' ? (
                             <>
-                                <StatusBadge published={item.published} />
+                                <StatusBadge published={item.published} date={item.published_at} />
                                 <span>• {formattedDate}</span>
                                 <span className="bg-secondary px-2 py-0.5 rounded text-secondary-foreground font-medium">
                                     {item.category || "Geral"}
@@ -256,13 +256,30 @@ const ListItem = ({ item, type, onEdit, onDelete }) => {
     );
 };
 
-const StatusBadge = ({ published }) => (
-    <span className={`px-2.5 py-0.5 rounded-full text-[10px] uppercase font-black tracking-wider ${published
-            ? 'bg-emerald-500/10 text-emerald-600 border border-emerald-500/20'
-            : 'bg-yellow-500/10 text-yellow-600 border border-yellow-500/20'
-        }`}>
-        {published ? 'Publicado' : 'Rascunho'}
-    </span>
-);
+const StatusBadge = ({ published, date }) => {
+    const isScheduled = published && new Date(date) > new Date();
+
+    if (!published) {
+        return (
+            <span className="bg-yellow-500/10 text-yellow-600 border border-yellow-500/20 px-2.5 py-0.5 rounded-full text-[10px] uppercase font-black tracking-wider">
+                Rascunho
+            </span>
+        );
+    }
+
+    if (isScheduled) {
+        return (
+            <span className="bg-blue-500/10 text-blue-600 border border-blue-500/20 px-2.5 py-0.5 rounded-full text-[10px] uppercase font-black tracking-wider flex items-center gap-1">
+                ⏳ Agendado
+            </span>
+        );
+    }
+
+    return (
+        <span className="bg-emerald-500/10 text-emerald-600 border border-emerald-500/20 px-2.5 py-0.5 rounded-full text-[10px] uppercase font-black tracking-wider">
+            Publicado
+        </span>
+    );
+};
 
 export default Dashboard;
