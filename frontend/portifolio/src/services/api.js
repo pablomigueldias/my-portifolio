@@ -75,10 +75,12 @@ export const portfolioService = {
 };
 
 export const blogService = {
-  getAllPosts: async (skip = 0, limit = 10) => {
-    const { data } = await api.get('/blog/', { params: { skip, limit } });
+  getAllPosts: async (skip = 0, limit = 100, status = 'published') => {
+    const { data } = await api.get('/blog/', { 
+        params: { skip, limit, status }
+    });
     return data;
-  },
+},
 
   getPostBySlug: async (slug) => {
     const { data } = await api.get(`/blog/${slug}/`);
