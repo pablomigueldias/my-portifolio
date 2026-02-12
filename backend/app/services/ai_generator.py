@@ -1,18 +1,22 @@
-from google import genai
-from google.genai import types
+import google.generativeai as genai
 import os
 import json
 from fastapi import HTTPException, UploadFile
 
-def get_client():
+def configure_genai():
     api_key = os.getenv("GEMINI_API_KEY")
     if not api_key:
         print("DEBUG GENAI ERROR: GEMINI_API_KEY não encontrada no .env")
         raise HTTPException(status_code=500, detail="Chave de API não configurada.")
-    return genai.Client(api_key=api_key)
+    genai.configure(api_key=api_key) #type: ignore
 
 def generate_blog_post(raw_notes: str) -> dict:
-    client = get_client()
+    configure_genai()
+
+    model = genai.GenerativeModel( #type: ignore
+        'gemini-1.5-flash',
+        generation_config={"response_mime_type": "application/json"}
+    )
 
     prompt = f"""
     Aja como Pablo, estudante de ADS na Impacta, Full Stack Developer e Tech Writer.
@@ -21,31 +25,24 @@ def generate_blog_post(raw_notes: str) -> dict:
     Notas: {raw_notes}
     
     REGRAS CRÍTICAS DE OUTPUT:
-    1. Responda APENAS com um objeto JSON válido. Sem markdown ```json em volta.
-    2. O campo 'content' deve conter TODO o corpo do artigo formatado em Markdown rico (use ##, ###, blocos de código e negrito).
-    3. O tom deve ser didático, profissional, mas acessível (nível Junior/Pleno).
-    4. Crie um slug (URL) amigável baseada no título.
+    1. Responda APENAS com um objeto JSON válido.
+    2. O campo 'content' deve conter TODO o corpo do artigo formatado em Markdown rico.
+    3. Crie um slug (URL) amigável baseada no título.
     
     ESTRUTURA JSON OBRIGATÓRIA:
     {{
-        "title": "Título Instigante do Artigo",
-        "content": "Conteúdo completo em Markdown aqui...",
-        "excerpt": "Resumo curto para SEO (máx 160 caracteres)",
-        "category": "Escolha a melhor: Python / JavaScript / DevOps / Carreira / Dados",
-        "slug": "url-amigavel-do-post",
-        "read_time": "X min"
+        "title": "Título Instigante",
+        "content": "Conteúdo em Markdown...",
+        "excerpt": "Resumo curto (SEO)",
+        "category": "Categoria Tech",
+        "slug": "url-do-post",
+        "read_time": "5 min"
     }}
     """
     
     try:
-        response = client.models.generate_content(
-            model='gemini-1.5-flash', 
-            contents=prompt,
-            config=types.GenerateContentConfig(
-                response_mime_type='application/json'
-            )
-        )
-
+        response = model.generate_content(prompt)
+        
         if not response.text:
             raise HTTPException(status_code=500, detail="A IA retornou vazio.")
 
@@ -53,10 +50,16 @@ def generate_blog_post(raw_notes: str) -> dict:
 
     except Exception as e:
         print(f"DEBUG GENAI ERROR: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"Erro na IA: {str(e)}")
+        error_msg = str(e)
+        raise HTTPException(status_code=500, detail=f"Erro na IA: {error_msg}")
 
 async def generate_from_file(file: UploadFile) -> dict:
-    client = get_client()
+    configure_genai()
+    
+    model = genai.GenerativeModel( #type: ignore
+        'gemini-1.5-flash',
+        generation_config={"response_mime_type": "application/json"}
+    )
     
     content_bytes = await file.read()
     
@@ -67,21 +70,15 @@ async def generate_from_file(file: UploadFile) -> dict:
 
     prompt = f"""
     Analise o conteúdo do arquivo técnico abaixo e crie um artigo de blog sobre ele.
-    Siga as mesmas regras de formatação JSON e estilo do Pablo (Estudante ADS/Dev).
+    Siga as mesmas regras de formatação JSON e estilo do Pablo.
     
-    Conteúdo do Arquivo:
+    Conteúdo:
     {text_content[:30000]} 
     """
 
     try:
-        response = client.models.generate_content(
-            model='gemini-1.5-flash',
-            contents=prompt,
-            config=types.GenerateContentConfig(
-                response_mime_type='application/json'
-            )
-        )
+        response = model.generate_content(prompt)
         return json.loads(response.text)
     except Exception as e:
         print(f"DEBUG FILE GENAI ERROR: {str(e)}")
-        raise HTTPException(status_code=500, detail="Erro ao processar arquivo pela IA.")
+        raise HTTPException(status_code=500, detail="Erro ao processar arquivo.")
