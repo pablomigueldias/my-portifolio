@@ -6,14 +6,14 @@ from datetime import datetime, timedelta
 import os
 from typing import Optional
 
-# Configurações
+
 SECRET_KEY = os.getenv("SECRET_KEY", "chave_padrao_insegura_mude_no_env")
-ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24  # 24 horas
+ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24
+ALGORITHM = os.getenv("ALGORITHM", "HS256")
+
 
 security = HTTPBearer()
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-
 
 
 def verify_password(plain_password, hashed_password):

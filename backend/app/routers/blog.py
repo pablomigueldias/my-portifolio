@@ -1,79 +1,100 @@
 from typing import List, Optional
-from datetime import datetime
-from fastapi import APIRouter, Depends, HTTPException, status, UploadFile, File, Query
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.orm import Session
-
-# Imports Internos
 from app.db.database import get_db
 from app.models.blog import Post
-from app.schemas.post import PostResponse, PostUpdate, AIRequest
-from app.services.blog import BlogService
-from app.services.ai_generator import AIBlogService
-from app.core.security import validate_admin
+from app.schemas.post import PostCreate, PostUpdate, PostResponse
+from app.routers.auth import get_current_user # Garante que só admin mexe aqui
+import re
+import unicodedata
 
-router = APIRouter(prefix="/blog", tags=["Blog"])
+router = APIRouter(
+    prefix="/blog",
+    tags=["Blog"]
+)
 
+def slugify(value: str) -> str:
+
+    value = unicodedata.normalize('NFKD', value).encode('ascii', 'ignore').decode('ascii')
+    value = re.sub(r'[^\w\s-]', '', value.lower())
+    return re.sub(r'[-\s]+', '-', value).strip('-')
 
 @router.get("/", response_model=List[PostResponse])
 def read_posts(
     skip: int = 0,
     limit: int = 100,
-    status: str = Query(
-        "published", description="Filtro: 'published' ou 'all'"),
+    status: str = Query("published", description="Filtro: 'published' ou 'all'"),
     db: Session = Depends(get_db)
 ):
     query = db.query(Post)
-
+    
     if status == "published":
         query = query.filter(Post.published == True)
+        
+    return query.order_by(Post.create_at.desc()).offset(skip).limit(limit).all()
 
-    posts = query.order_by(Post.create_at.desc()).offset(
-        skip).limit(limit).all()
+@router.get("/{slug}/", response_model=PostResponse)
+def read_post(slug: str, db: Session = Depends(get_db)):
+    post = db.query(Post).filter(Post.slug == slug).first()
+    if not post:
+        raise HTTPException(status_code=404, detail="Post not found")
+    return post
 
-    return posts
+@router.post("/", response_model=PostResponse, status_code=status.HTTP_201_CREATED)
+def create_post(
+    post: PostCreate, 
+    db: Session = Depends(get_db),
+    current_user: dict = Depends(get_current_user)
+):
 
+    base_slug = slugify(post.title)
+    slug = base_slug
+    counter = 1
+    
+    while db.query(Post).filter(Post.slug == slug).first():
+        slug = f"{base_slug}-{counter}"
+        counter += 1
 
-@router.get("/{slug}/", response_model=PostResponse, summary="Ler post completo")
-def read_post_by_slug(slug: str, db: Session = Depends(get_db)):
-    db_post = BlogService.get_post_by_slug(db, slug)
+    new_post = Post(
+        **post.model_dump(exclude={"slug"}),
+        slug=slug
+    )
+    
+    db.add(new_post)
+    db.commit()
+    db.refresh(new_post)
+    return new_post
 
-    if db_post is None:
-        raise HTTPException(status_code=404, detail="Artigo não encontrado")
+@router.put("/{slug}/", response_model=PostResponse)
+def update_post(
+    slug: str, 
+    post_update: PostUpdate, 
+    db: Session = Depends(get_db),
+    current_user: dict = Depends(get_current_user)
+):
+    db_post = db.query(Post).filter(Post.slug == slug).first()
+    if not db_post:
+        raise HTTPException(status_code=404, detail="Post not found")
 
-    if not db_post.published:
-        pass
+    update_data = post_update.model_dump(exclude_unset=True)
+    
+    for key, value in update_data.items():
+        setattr(db_post, key, value)
 
+    db.commit()
+    db.refresh(db_post)
     return db_post
 
+@router.delete("/{slug}/", status_code=status.HTTP_204_NO_CONTENT)
+def delete_post(
+    slug: str, 
+    db: Session = Depends(get_db),
+    current_user: dict = Depends(get_current_user)
+):
+    db_post = db.query(Post).filter(Post.slug == slug).first()
+    if not db_post:
+        raise HTTPException(status_code=404, detail="Post not found")
 
-@router.put("/{slug}/", response_model=PostResponse, dependencies=[Depends(validate_admin)])
-def update_post(slug: str, post_in: PostUpdate, db: Session = Depends(get_db)):
-    updated_post = BlogService.update_post(db, slug, post_in)
-    if not updated_post:
-        raise HTTPException(status_code=404, detail="Não encontrado.")
-    return updated_post
-
-
-@router.delete("/{slug}/", status_code=status.HTTP_204_NO_CONTENT, dependencies=[Depends(validate_admin)])
-def delete_post(slug: str, db: Session = Depends(get_db)):
-    success = BlogService.delete_post(db, slug)
-    if not success:
-        raise HTTPException(
-            status_code=404, detail="Artigo não encontrado ou já excluído.")
+    db.delete(db_post)
+    db.commit()
     return None
-
-
-@router.post("/generate", dependencies=[Depends(validate_admin)])
-def generate_draft(request: AIRequest):
-    return AIBlogService.generate_draft(request.notes)
-
-
-@router.post("/generate-from-file", dependencies=[Depends(validate_admin)])
-async def generate_from_md_file(file: UploadFile = File(...)):
-    content = await file.read()
-    try:
-        notes_text = content.decode("utf-8")
-    except UnicodeDecodeError:
-        notes_text = content.decode("latin-1")
-
-    return AIBlogService.generate_draft(notes_text)
