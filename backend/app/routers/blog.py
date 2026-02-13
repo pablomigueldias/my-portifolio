@@ -5,8 +5,9 @@ from pydantic import BaseModel, field_validator
 import re
 import unicodedata
 from datetime import datetime
+from zoneinfo import ZoneInfo
 
-# Imports do App
+
 from app.db.database import get_db
 from app.models.blog import Post
 from app.schemas.post import PostCreate, PostUpdate, PostResponse
@@ -56,15 +57,22 @@ async def generate_from_file_endpoint(file: UploadFile = File(...)):
 def read_posts(
     skip: int = 0,
     limit: int = 100,
-    status: str = Query("published", description="Filtro: 'published' ou 'all'"),
+    status: str = Query("published"),
     db: Session = Depends(get_db)
 ):
     query = db.query(Post)
     
     if status == "published":
+
+        br_timezone = ZoneInfo("America/Sao_Paulo")
+        now_in_brazil = datetime.now(br_timezone)
+        
+
+        limit_date = now_in_brazil.replace(tzinfo=None)
+
         query = query.filter(
             Post.published == True,
-            (Post.published_at <= datetime.now()) | (Post.published_at == None)
+            (Post.published_at <= limit_date) | (Post.published_at == None)
         )
         
     return query.order_by(Post.create_at.desc()).offset(skip).limit(limit).all()
