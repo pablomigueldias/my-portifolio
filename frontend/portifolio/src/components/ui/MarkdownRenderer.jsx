@@ -1,14 +1,39 @@
-import React from 'react';
+import React, { useEffect, useId } from 'react';
 import ReactMarkdown from 'react-markdown';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { dracula } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import remarkGfm from 'remark-gfm';
-
-
 import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
 import 'katex/dist/katex.min.css';
+import mermaid from 'mermaid';
 
+
+const MermaidChart = ({ chart }) => {
+    const id = `mermaid-${Math.random().toString(36).substr(2, 9)}`;
+
+    useEffect(() => {
+        mermaid.initialize({
+            startOnLoad: false,
+            theme: 'dark',
+            securityLevel: 'loose',
+            fontFamily: 'Fira Code, monospace'
+        });
+
+        const element = document.getElementById(id);
+        if (element) {
+            mermaid.run({ nodes: [element] });
+        }
+    }, [chart, id]);
+
+    return (
+        <div className="flex justify-center my-8 bg-card/30 p-6 rounded-xl border border-border shadow-sm overflow-x-auto">
+            <pre id={id} className="mermaid bg-transparent m-0 flex justify-center">
+                {chart}
+            </pre>
+        </div>
+    );
+};
 
 const MarkdownRenderer = ({ content }) => {
     
@@ -38,11 +63,17 @@ const MarkdownRenderer = ({ content }) => {
         td: ({ ...props }) => <td className="px-6 py-4 border border-border text-muted-foreground" {...props} />,
 
         code({ inline, className, children, ...props }) {
-            const match = /language-(\w+)/.exec(className || '')
+            const match = /language-(\w+)/.exec(className || '');
+            const lang = match ? match[1] : '';
+
+            if (!inline && lang === 'mermaid') {
+                return <MermaidChart chart={String(children).replace(/\n$/, '')} />;
+            }
+
             return !inline && match ? (
                 <div className="rounded-xl my-8 border border-border shadow-lg group bg-card w-full grid grid-cols-1 min-w-0">
                     <div className="bg-muted/80 px-4 py-2 flex items-center justify-between border-b border-border backdrop-blur-sm">
-                        <span className="text-xs text-muted-foreground font-mono uppercase font-bold">{match[1]}</span>
+                        <span className="text-xs text-muted-foreground font-mono uppercase font-bold">{lang}</span>
                         <div className="flex gap-1.5 opacity-60 group-hover:opacity-100 transition-opacity">
                             <div className="w-2.5 h-2.5 rounded-full bg-red-500/80"></div>
                             <div className="w-2.5 h-2.5 rounded-full bg-yellow-500/80"></div>
@@ -53,7 +84,7 @@ const MarkdownRenderer = ({ content }) => {
                         <SyntaxHighlighter
                             {...props}
                             style={dracula}
-                            language={match[1]}
+                            language={lang}
                             PreTag="div"
                             customStyle={{
                                 margin: 0,
@@ -79,7 +110,7 @@ const MarkdownRenderer = ({ content }) => {
     return (
         <div className="text-foreground min-h-[300px] w-full grid grid-cols-1 min-w-0 markdown-body">
             <ReactMarkdown 
-                remarkPlugins={[remarkGfm, remarkMath]}
+                remarkPlugins={[remarkGfm, remarkMath]} 
                 rehypePlugins={[rehypeKatex]}           
                 components={components}
             >
