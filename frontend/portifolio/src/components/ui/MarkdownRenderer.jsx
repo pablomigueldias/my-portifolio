@@ -4,6 +4,12 @@ import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { dracula } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import remarkGfm from 'remark-gfm';
 
+
+import remarkMath from 'remark-math';
+import rehypeKatex from 'rehype-katex';
+import 'katex/dist/katex.min.css';
+
+
 const MarkdownRenderer = ({ content }) => {
     
     const components = {
@@ -71,8 +77,12 @@ const MarkdownRenderer = ({ content }) => {
     };
 
     return (
-        <div className="text-foreground min-h-[300px] w-full grid grid-cols-1 min-w-0">
-            <ReactMarkdown remarkPlugins={[remarkGfm]} components={components}>
+        <div className="text-foreground min-h-[300px] w-full grid grid-cols-1 min-w-0 markdown-body">
+            <ReactMarkdown 
+                remarkPlugins={[remarkGfm, remarkMath]}
+                rehypePlugins={[rehypeKatex]}           
+                components={components}
+            >
                 {content}
             </ReactMarkdown>
         </div>
