@@ -64,3 +64,126 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   @apply bg-muted-foreground/50;
 }
+
+
+/* =========================================
+   1. ESTRUTURA (Layout)
+   Aplica tanto no Light quanto no Dark
+========================================= */
+
+.EasyMDEContainer {
+  background: transparent;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.CodeMirror {
+  flex: 1;                 /* Ocupa o espaço vertical */
+  height: auto !important; /* Reseta altura fixa */
+  font-family: 'Fira Code', monospace;
+  line-height: 1.6;
+  padding: 1rem !important;
+  border-bottom-left-radius: 0.75rem !important;
+  border-bottom-right-radius: 0.75rem !important;
+}
+
+.editor-toolbar {
+  border-top-left-radius: 0.75rem !important;
+  border-top-right-radius: 0.75rem !important;
+  opacity: 1 !important;
+}
+
+
+/* Toolbar Dark */
+.dark .editor-toolbar {
+  background-color: #1e293b !important;
+  border: 1px solid #334155 !important;
+}
+
+.dark .editor-toolbar button {
+  color: #94a3b8 !important;
+}
+
+.dark .editor-toolbar button:hover, 
+.dark .editor-toolbar button.active {
+  background-color: #334155 !important;
+  border-color: transparent !important;
+  color: #f8fafc !important;
+}
+
+.dark .editor-toolbar i.separator {
+  border-left: 1px solid #334155 !important;
+  border-right: none !important;
+}
+
+/* Área de Texto Dark */
+.dark .CodeMirror {
+  background-color: #0f172a !important;
+  color: #e2e8f0 !important;
+  border: 1px solid #334155 !important;
+  border-top: none !important;
+}
+
+.dark .CodeMirror-cursor {
+  border-left: 2px solid #3b82f6 !important;
+}
+
+.dark .CodeMirror-gutter {
+  background-color: #0f172a !important;
+  border-right: 1px solid #334155 !important;
+}
+
+.dark .CodeMirror-linenumber {
+  color: #475569 !important;
+}
+
+/* Preview Dark */
+.dark .editor-preview {
+  background-color: #0f172a !important;
+  color: #cbd5e1 !important;
+  border-color: #334155 !important;
+}
+.dark .editor-preview pre, 
+.dark .editor-preview code {
+  background-color: #1e293b !important;
+}
+.dark .editor-preview h1, 
+.dark .editor-preview h2 {
+  border-bottom-color: #334155 !important;
+}
+
+/* =========================================
+   3. LIGHT MODE (Cores Claras - Opcional)
+   Estiliza o modo claro para ficar bonito também
+   (Sem isso ele volta pro padrão feio do plugin)
+========================================= */
+
+/* Toolbar Light */
+html:not(.dark) .editor-toolbar {
+  background-color: #f8fafc !important; /* Slate-50 */
+  border: 1px solid #e2e8f0 !important; /* Slate-200 */
+}
+
+html:not(.dark) .editor-toolbar button {
+  color: #64748b !important; /* Slate-500 */
+}
+
+html:not(.dark) .editor-toolbar button:hover,
+html:not(.dark) .editor-toolbar button.active {
+  background-color: #e2e8f0 !important;
+  color: #0f172a !important;
+}
+
+/* Área de Texto Light */
+html:not(.dark) .CodeMirror {
+  background-color: #ffffff !important;
+  color: #0f172a !important; /* Slate-900 */
+  border: 1px solid #e2e8f0 !important;
+  border-top: none !important;
+}
+
+html:not(.dark) .CodeMirror-gutter {
+  background-color: #f8fafc !important;
+  border-right: 1px solid #e2e8f0 !important;
+}
