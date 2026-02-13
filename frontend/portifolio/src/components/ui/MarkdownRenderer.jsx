@@ -1,4 +1,4 @@
-import React, { useEffect, useId } from 'react';
+import React, { useEffect } from 'react';
 import ReactMarkdown from 'react-markdown';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { dracula } from 'react-syntax-highlighter/dist/esm/styles/prism';
@@ -9,28 +9,48 @@ import 'katex/dist/katex.min.css';
 import mermaid from 'mermaid';
 
 
+const extractText = (children) => {
+    if (!children) return '';
+    if (typeof children === 'string') return children;
+    if (Array.isArray(children)) {
+        return children.map(child => {
+            if (typeof child === 'string') return child;
+            return child?.props?.children ? extractText(child.props.children) : '';
+        }).join('');
+    }
+    if (typeof children === 'object' && children?.props?.children) {
+        return extractText(children.props.children);
+    }
+    return '';
+};
+
 const MermaidChart = ({ chart }) => {
     const id = `mermaid-${Math.random().toString(36).substr(2, 9)}`;
 
     useEffect(() => {
-        mermaid.initialize({
-            startOnLoad: false,
-            theme: 'dark',
-            securityLevel: 'loose',
-            fontFamily: 'Fira Code, monospace'
-        });
-
-        const element = document.getElementById(id);
-        if (element) {
-            mermaid.run({ nodes: [element] });
+        try {
+            mermaid.initialize({
+                startOnLoad: false,
+                theme: 'dark',
+                securityLevel: 'loose',
+                fontFamily: 'Fira Code, monospace',
+            });
+            
+            const element = document.getElementById(id);
+            if (element && chart) {
+                element.removeAttribute('data-processed');
+                mermaid.run({ nodes: [element] });
+            }
+        } catch (error) {
+            console.error("Erro ao renderizar Mermaid:", error);
         }
     }, [chart, id]);
 
     return (
         <div className="flex justify-center my-8 bg-card/30 p-6 rounded-xl border border-border shadow-sm overflow-x-auto">
-            <pre id={id} className="mermaid bg-transparent m-0 flex justify-center">
+            <div id={id} className="mermaid bg-transparent m-0 flex justify-center">
                 {chart}
-            </pre>
+            </div>
         </div>
     );
 };
@@ -65,9 +85,11 @@ const MarkdownRenderer = ({ content }) => {
         code({ inline, className, children, ...props }) {
             const match = /language-(\w+)/.exec(className || '');
             const lang = match ? match[1] : '';
+            
+            const codeString = extractText(children).replace(/\n$/, '');
 
             if (!inline && lang === 'mermaid') {
-                return <MermaidChart chart={String(children).replace(/\n$/, '')} />;
+                return <MermaidChart chart={codeString} />;
             }
 
             return !inline && match ? (
@@ -95,7 +117,7 @@ const MarkdownRenderer = ({ content }) => {
                                 width: '100%',
                             }}
                         >
-                            {String(children).replace(/\n$/, '')}
+                            {codeString}
                         </SyntaxHighlighter>
                     </div>
                 </div>
